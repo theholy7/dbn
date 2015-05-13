@@ -1,4 +1,4 @@
-package bayesNetwork;
+package bnApp;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

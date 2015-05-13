@@ -12,4 +12,12 @@ public class Edge {
 		this.parentNode = parentNode;
 		this.childNode = childNode;
 	}
+
+	@Override
+	public String toString() {
+		return "Edge [parentNode=" + parentNode + ", childNode=" + childNode
+				+ "]";
+	}
+	
+	
 }

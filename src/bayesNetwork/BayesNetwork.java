@@ -1,6 +1,7 @@
 package bayesNetwork;
 
 import java.util.LinkedList;
+import java.util.Random;;
 
 
 public class BayesNetwork {
@@ -15,7 +16,14 @@ public class BayesNetwork {
 	LinkedList<Node> nodeList = new LinkedList<Node>();
 	LinkedList<Edge> edgeList = new LinkedList<Edge>();
 	
-	
+	public BayesNetwork(int numberOfNodes){
+		this.numberOfNodes = numberOfNodes;
+		for(int i = 0; i < numberOfNodes; i++){
+			Node node = new Node();
+			this.nodeList.add(node);
+		}
+	}
+		
 	public BayesNetwork(int numberOfNodes, int dataLength, Integer[][] data, int[] dataType) {
 		super();
 		this.numberOfNodes = numberOfNodes;
@@ -37,7 +45,7 @@ public class BayesNetwork {
 		
 	}
 	
-	void addEdge(Node parentNode, Node childNode){
+	boolean addEdge(Node parentNode, Node childNode){
 		boolean edgeExists = false;
 		
 		//Check if Edge exists
@@ -52,28 +60,120 @@ public class BayesNetwork {
 
 			//Add Edge to nodes
 			this.edgeList.add(edge);
+			return true;
 		}
+		return false;
 	}
 	
-	void removeEdge(Node parentNode, Node childNode){
+	boolean removeEdge(Node parentNode, Node childNode){
 		for(Edge e: this.edgeList)
 			if(e.parentNode.equals(parentNode) && e.childNode.equals(childNode)){
 				this.edgeList.remove(e);
+				return true;
 			}
+		return false;
 	}
 	
-	void flipEdge(Node parentNode, Node childNode){
+	boolean flipEdge(Node parentNode, Node childNode){
 		for(Edge e: this.edgeList)
 			if(e.parentNode.equals(parentNode) && e.childNode.equals(childNode)){
 				e.parentNode = childNode;
 				e.childNode = parentNode;
+				return true;
 			}
-		
+		return false;
 	}
 	
-	boolean isDag(){
-		//Check if network is DAG
-		return false;	
+	public boolean isDag(){
+//		Check if network is DAG
+		boolean isDag = true;
+//		L ← Empty list that will contain the sorted nodes
+		LinkedList<Node> unmarkedNodes = (LinkedList<Node>) this.nodeList.clone();
+		LinkedList<Node> tempMarkedNodes = new LinkedList<Node>();
+		
+//		while there are unmarked nodes do
+		while(unmarkedNodes.isEmpty() == false){
+//		    select an unmarked node n
+			
+			Node selectedNode = unmarkedNodes.getFirst();
+			
+//		    visit(n)			
+			isDag = visitNode(selectedNode, unmarkedNodes, tempMarkedNodes);
+			
+			if(isDag == false) break;
+			
+		}
+		
+		return isDag;	
 	}
 
+//	function visit(node n)
+	private boolean visitNode(Node node, LinkedList<Node> unmarked, LinkedList<Node> tempMarked){
+		boolean isDag = true;
+		
+//	    if n has a temporary mark then stop (not a DAG)
+		if(tempMarked.contains(node) == true) return false;
+		else{
+//		    if n is not marked (i.e. has not been visited yet) then
+//	        mark n temporarily
+			tempMarked.add(node);
+			
+//	        for each node m with an edge from n to m do
+			for(Edge e: edgeList){
+				if(e.parentNode == node){
+//		            visit(m)
+					isDag = visitNode(e.childNode, unmarked, tempMarked);
+				}
+			}
+//	        mark n permanently
+			unmarked.remove(node);
+//	        unmark n temporarily
+			tempMarked.remove(node);
+//	        add n to head of L
+	
+			
+			return isDag;
+			
+		}
+	}
+
+	
+	public void randomNet(){
+		//Begin random object
+		Random randomGenerator = new Random();
+		boolean actionPerformed = false;
+		
+		do{
+			
+			int randomParentNode = randomGenerator.nextInt(this.numberOfNodes);
+			int randomChildNode = 0;
+			do{
+			randomChildNode = randomGenerator.nextInt(this.numberOfNodes);
+			}while(randomParentNode==randomChildNode);
+
+			int randomAction = randomGenerator.nextInt(3)+1;
+			System.out.println(randomAction);
+			System.out.println(randomParentNode);
+			System.out.println(randomChildNode);
+			
+			switch (randomAction) {
+			case 1: actionPerformed = this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
+					if(actionPerformed) System.out.println("Added Edge");
+				break;
+				
+			case 2: actionPerformed = this.removeEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
+					if(actionPerformed) System.out.println("Removed Edge");
+				break;
+				
+			case 3: actionPerformed = this.flipEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
+					if(actionPerformed) System.out.println("Flipped Edge");
+				break;
+
+			default: System.out.println("Action Random int is not right!");
+				break;
+			}
+		}while(this.isDag() == false || actionPerformed == false);
+		
+		
+	}
 }
