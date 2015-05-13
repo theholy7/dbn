@@ -6,6 +6,12 @@ public class Node {
 	int dataType;
 	Integer[] data;
 	
+	//Fields to check if network is DAG
+	//boolean tempMark = false;
+	//boolean permMark = false;
+	
+	public Node(){}
+	
 	public Node(int dataType, Integer[] data) {
 		super();
 		this.dataType = dataType;
