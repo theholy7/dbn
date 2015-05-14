@@ -199,6 +199,7 @@ public class BayesNetwork {
 
 		TreeSet<Integer> indexNijk = new TreeSet<Integer>();
 		TreeSet<Integer> finalIndexNijk = new TreeSet<Integer>();
+		
 		boolean firstParent = true;
 		int parentValuePointer = 0;
 
@@ -248,4 +249,20 @@ public class BayesNetwork {
 		return (Integer[]) parentValues.toArray();
 	}
 
+	public int netComplexity(){
+		
+		int maxParentConfigs = 1;
+		int complexity = 0;
+		
+		for(Node n: this.nodeList){ //for each node
+			for(Edge e: this.edgeList){ //for each edge
+				if(e.childNode == n){ //if node is a child in that edge
+					maxParentConfigs *= e.parentNode.dataType; //get parent dataType and multiply = q_i
+				}
+			}
+			complexity += (n.dataType - 1) *  maxParentConfigs; //sum this for all nodes - get complexity of net
+		}
+		
+		return complexity;
+	}
 }
