@@ -1,7 +1,9 @@
 package bayesNetwork;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.Random;;
+import java.util.Random;
+import java.util.TreeSet;
 
 
 public class BayesNetwork {
@@ -176,4 +178,22 @@ public class BayesNetwork {
 		
 		
 	}
+	public Integer[] parentValues(int parentConfig, ArrayList<Node> parents){
+		ArrayList<Integer> parentValues = new ArrayList<Integer>();
+		
+		int numberOfParents = parents.size();
+		int aux = parents.size();
+		int tempParentConfig = parentConfig;
+		for(int i = numberOfParents; i>=2;i--){
+			parentValues.add(0, tempParentConfig % parents.get(aux).dataType);
+			
+			tempParentConfig = (tempParentConfig - parentValues.get(0))/parents.get(aux).dataType;
+
+			aux--;
+		}
+		parentValues.add(0, tempParentConfig);
+		
+		return (Integer[]) parentValues.toArray();
+	}
+
 }
