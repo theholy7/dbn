@@ -19,6 +19,7 @@ public class BayesNetwork {
 	LinkedList<Node> nodeList = new LinkedList<Node>();
 	LinkedList<Edge> edgeList = new LinkedList<Edge>();
 	
+	
 	public BayesNetwork(int numberOfNodes){
 		this.numberOfNodes = numberOfNodes;
 		for(int i = 0; i < numberOfNodes; i++){
@@ -217,13 +218,13 @@ public class BayesNetwork {
 					if(firstParent){ //If its the first parent
 						if(n.data[i]==parentValues[0]){ //If it matches the parent value of the config
 							finalIndexNijk.add(i); //add the index of the data
-							System.out.println("finalIndexNijk" + finalIndexNijk);
+							//System.out.println("finalIndexNijk" + finalIndexNijk);
 						}
 					}
 					else{ //from the second parent on
 						if(n.data[i]==parentValues[parentValuePointer]){ //if data matches value of parent config
 							indexNijk.add(i); //add data index to set
-							System.out.println("IndexNijk" + indexNijk);
+							// System.out.println("IndexNijk" + indexNijk);
 							secondParent = true;
 						}
 					}
@@ -244,7 +245,7 @@ public class BayesNetwork {
 
 		return countNijk;
 	}
-	
+
 	//Given j-config returns array of j_i value of each parent
 	public Integer[] parentValues(int parentConfig, ArrayList<Node> parents){
 		List<Integer> parentValues = new ArrayList<Integer>();
@@ -283,4 +284,50 @@ public class BayesNetwork {
 		
 		return complexity;
 	}
+	
+	
+	public double logLike(){
+		int Nij = 0;
+		double loglike = 0;
+		int maxParentConfigs = 1;
+		for(Node n: this.nodeList){
+			
+			for(Edge e: this.edgeList){ //for each edge
+				if(e.childNode == n){ //if node is a child in that edge
+					maxParentConfigs *= e.parentNode.dataType; //get parent dataType and multiply = q_i
+				}
+			}
+			
+			System.out.println("MaxConfigs " + maxParentConfigs);
+			System.out.println("Data Type " + n.dataType);
+			
+			for(int i=0; i< maxParentConfigs; i++){
+				Nij = 0;
+				
+				for(int k = 0; k < n.dataType; k++){
+					Nij += calculateNijk(n, i, k);
+				}
+				
+				for(int k = 0; k < n.dataType; k++){
+					int auxNijk = calculateNijk(n, i, k);
+					
+					System.out.println(auxNijk  + " * log( " + auxNijk + " / " + Nij + " )");
+					
+					if(auxNijk != 0 && Nij !=0){
+						double auxDiv = (double) auxNijk / (double) Nij;
+						loglike += (double) auxNijk * (Math.log(auxDiv) / Math.log(2));
+					}
+					else loglike += 0;
+				}
+				
+			}
+			maxParentConfigs = 1;
+		}
+		System.out.println("here " + loglike);
+		return loglike;
+	}
+	
+	public double mdl(){return 0;}
+	
+
 }

@@ -28,7 +28,8 @@ public class BnTest {
 	bn.addEdge(bn.nodeList.get(1), bn.nodeList.get(2));
 	System.out.println(bn.isDag());
 	
-	System.out.println(bn.calculateNijk(bn.nodeList.get(1), 1, 2));
+	System.out.println(bn.calculateNijk(bn.nodeList.get(0), 0, 0));
+	bn.logLike();
 	}
 	
 	
