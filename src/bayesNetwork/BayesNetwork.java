@@ -178,6 +178,57 @@ public class BayesNetwork {
 		
 		
 	}
+
+
+	public int calculateNijk(Node node, int parentConfig, int valueK){
+		//Node - i
+		//Parent Config - j
+		//value K - k
+		//return Nijk
+
+		ArrayList<Node> parents = new ArrayList<Node>();
+
+
+		for(Edge e: this.edgeList){
+			if(e.childNode == node){
+				parents.add(e.parentNode);
+			}
+		}
+
+		Integer[] parentValues = parentValues(parentConfig, parents);
+
+		TreeSet<Integer> indexNijk = new TreeSet<Integer>();
+		TreeSet<Integer> finalIndexNijk = new TreeSet<Integer>();
+		boolean firstParent = true;
+		int parentValuePointer = 0;
+
+		for(Node n: parents){ //Check each parent Node
+			for(int i = 0; i < n.data.length; i++){ //Check each data point
+				if(firstParent){ //If its the first parent
+					if(n.data[i]==parentValues[0]){ //If it matches the parent value of the config
+						finalIndexNijk.add(i); //add the index of the data
+					}
+				}
+				else{ //from the second parent on
+					if(n.data[i]==parentValues[parentValuePointer]){ //if data matches value of parent config
+						indexNijk.add(i); //add data index to set
+					}
+				}
+			}
+			firstParent = false; //no longer checking first parent
+			finalIndexNijk.retainAll(indexNijk); //match the sets and keep the entries that match
+			parentValuePointer++; //point to the value that the next parent must have
+		}
+		
+		int countNijk = 0;
+		for(int i: finalIndexNijk){
+			if(node.data[i] == valueK) countNijk++;
+		}
+
+
+		return countNijk;
+	}
+	
 	//Given j-config returns array of j_i value of each parent
 	public Integer[] parentValues(int parentConfig, ArrayList<Node> parents){
 		ArrayList<Integer> parentValues = new ArrayList<Integer>();
