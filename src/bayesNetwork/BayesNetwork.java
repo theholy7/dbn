@@ -298,12 +298,9 @@ public class BayesNetwork {
 				}
 			}
 			
-			System.out.println("MaxConfigs " + maxParentConfigs);
-			System.out.println("Data Type " + n.dataType);
 			
 			for(int i=0; i< maxParentConfigs; i++){
 				Nij = 0;
-				
 				for(int k = 0; k < n.dataType; k++){
 					Nij += calculateNijk(n, i, k);
 				}
@@ -311,7 +308,7 @@ public class BayesNetwork {
 				for(int k = 0; k < n.dataType; k++){
 					int auxNijk = calculateNijk(n, i, k);
 					
-					System.out.println(auxNijk  + " * log( " + auxNijk + " / " + Nij + " )");
+					//System.out.println(auxNijk  + " * log( " + auxNijk + " / " + Nij + " )");
 					
 					if(auxNijk != 0 && Nij !=0){
 						double auxDiv = (double) auxNijk / (double) Nij;
@@ -323,7 +320,7 @@ public class BayesNetwork {
 			}
 			maxParentConfigs = 1;
 		}
-		System.out.println("here " + loglike);
+		System.out.println("LL= " + loglike);
 		return loglike;
 	}
 	
