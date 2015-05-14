@@ -178,6 +178,7 @@ public class BayesNetwork {
 		
 		
 	}
+	//Given j-config returns array of j_i value of each parent
 	public Integer[] parentValues(int parentConfig, ArrayList<Node> parents){
 		ArrayList<Integer> parentValues = new ArrayList<Integer>();
 		
