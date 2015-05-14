@@ -2,6 +2,7 @@ package bayesNetwork;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 import java.util.TreeSet;
 
@@ -188,40 +189,54 @@ public class BayesNetwork {
 
 		ArrayList<Node> parents = new ArrayList<Node>();
 
-
+		int countNijk = 0;
+		
 		for(Edge e: this.edgeList){
 			if(e.childNode == node){
 				parents.add(e.parentNode);
 			}
 		}
-
 		Integer[] parentValues = parentValues(parentConfig, parents);
-
 		TreeSet<Integer> indexNijk = new TreeSet<Integer>();
 		TreeSet<Integer> finalIndexNijk = new TreeSet<Integer>();
 		
 		boolean firstParent = true;
+		boolean secondParent = false;
 		int parentValuePointer = 0;
 
-		for(Node n: parents){ //Check each parent Node
-			for(int i = 0; i < n.data.length; i++){ //Check each data point
-				if(firstParent){ //If its the first parent
-					if(n.data[i]==parentValues[0]){ //If it matches the parent value of the config
-						finalIndexNijk.add(i); //add the index of the data
-					}
-				}
-				else{ //from the second parent on
-					if(n.data[i]==parentValues[parentValuePointer]){ //if data matches value of parent config
-						indexNijk.add(i); //add data index to set
-					}
+		if(parents.isEmpty()){
+			for(int m=0; m<node.data.length; m++){
+				if(node.data[m]==valueK){
+					countNijk++;
 				}
 			}
-			firstParent = false; //no longer checking first parent
-			finalIndexNijk.retainAll(indexNijk); //match the sets and keep the entries that match
-			parentValuePointer++; //point to the value that the next parent must have
+		}
+		else{
+			for(Node n: parents){ //Check each parent Node
+				for(int i = 0; i < n.data.length; i++){ //Check each data point
+					if(firstParent){ //If its the first parent
+						if(n.data[i]==parentValues[0]){ //If it matches the parent value of the config
+							finalIndexNijk.add(i); //add the index of the data
+							System.out.println("finalIndexNijk" + finalIndexNijk);
+						}
+					}
+					else{ //from the second parent on
+						if(n.data[i]==parentValues[parentValuePointer]){ //if data matches value of parent config
+							indexNijk.add(i); //add data index to set
+							System.out.println("IndexNijk" + indexNijk);
+							secondParent = true;
+						}
+					}
+				}
+				firstParent = false; //no longer checking first parent
+				if(secondParent) finalIndexNijk.retainAll(indexNijk); //match the sets and keep the entries that match
+
+				parentValuePointer++; //point to the value that the next parent must have
+			}
 		}
 		
-		int countNijk = 0;
+		
+
 		for(int i: finalIndexNijk){
 			if(node.data[i] == valueK) countNijk++;
 		}
@@ -232,7 +247,7 @@ public class BayesNetwork {
 	
 	//Given j-config returns array of j_i value of each parent
 	public Integer[] parentValues(int parentConfig, ArrayList<Node> parents){
-		ArrayList<Integer> parentValues = new ArrayList<Integer>();
+		List<Integer> parentValues = new ArrayList<Integer>();
 		
 		int numberOfParents = parents.size();
 		int aux = parents.size();
@@ -246,7 +261,10 @@ public class BayesNetwork {
 		}
 		parentValues.add(0, tempParentConfig);
 		
-		return (Integer[]) parentValues.toArray();
+		Integer[] finalArray=new Integer[parentValues.size()];
+		finalArray=parentValues.toArray(finalArray);
+		
+		return finalArray;
 	}
 
 	public int netComplexity(){
