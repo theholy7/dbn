@@ -30,6 +30,19 @@ public class BnTest {
 	
 	System.out.println(bn.calculateNijk(bn.nodeList.get(0), 0, 0));
 	bn.logLike();
+	System.out.println("1- " + bn.mdl());
+	bn.randomNet();
+	System.out.println("2- " + bn.mdl());
+	bn.randomNet();
+	System.out.println("3- " + bn.mdl());
+	bn.randomNet();
+	System.out.println("4- " + bn.mdl());
+	bn.randomNet();
+	System.out.println("5- " + bn.mdl());
+	bn.randomNet();
+	System.out.println("6- " + bn.mdl());
+	bn.randomNet();
+	System.out.println("7- " + bn.mdl());
 	}
 	
 	

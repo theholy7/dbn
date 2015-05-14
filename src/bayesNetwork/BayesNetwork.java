@@ -253,12 +253,14 @@ public class BayesNetwork {
 		int numberOfParents = parents.size();
 		int aux = parents.size();
 		int tempParentConfig = parentConfig;
+		
 		for(int i = numberOfParents; i>=2;i--){
+			aux--;
 			parentValues.add(0, tempParentConfig % parents.get(aux).dataType);
 			
 			tempParentConfig = (tempParentConfig - parentValues.get(0))/parents.get(aux).dataType;
 
-			aux--;
+			
 		}
 		parentValues.add(0, tempParentConfig);
 		
@@ -291,40 +293,42 @@ public class BayesNetwork {
 		double loglike = 0;
 		int maxParentConfigs = 1;
 		for(Node n: this.nodeList){
-			
+
 			for(Edge e: this.edgeList){ //for each edge
 				if(e.childNode == n){ //if node is a child in that edge
 					maxParentConfigs *= e.parentNode.dataType; //get parent dataType and multiply = q_i
 				}
 			}
-			
-			
+
+
 			for(int i=0; i< maxParentConfigs; i++){
 				Nij = 0;
 				for(int k = 0; k < n.dataType; k++){
 					Nij += calculateNijk(n, i, k);
 				}
-				
+
 				for(int k = 0; k < n.dataType; k++){
 					int auxNijk = calculateNijk(n, i, k);
-					
+
 					//System.out.println(auxNijk  + " * log( " + auxNijk + " / " + Nij + " )");
-					
+
 					if(auxNijk != 0 && Nij !=0){
 						double auxDiv = (double) auxNijk / (double) Nij;
 						loglike += (double) auxNijk * (Math.log(auxDiv) / Math.log(2));
 					}
 					else loglike += 0;
 				}
-				
+
 			}
 			maxParentConfigs = 1;
 		}
 		System.out.println("LL= " + loglike);
 		return loglike;
 	}
-	
-	public double mdl(){return 0;}
+
+	public double mdl(){
+		return this.logLike() - 1/2 * Math.log(this.nodeList.size())*(double) this.netComplexity();
+	}
 	
 
 }
