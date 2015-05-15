@@ -14,6 +14,7 @@ public class BnTest {
 		int[] dataTypes={2,3,2};
 
 		BayesNetwork bn = new BayesNetwork(nNodes, dataSize, variables, dataTypes);
+<<<<<<< Updated upstream
 
 
 		Node node = bn.nodeList.get(0);
@@ -46,6 +47,23 @@ public class BnTest {
 		//	System.out.println("6- " + bn.mdl());
 		//	bn.randomNet();
 		//	System.out.println("7- " + bn.mdl());
+=======
+		for(int i=0; i<7; i++){
+			System.out.println(bn.nodeList.getFirst().data[i]);
+		}
+	Node node = bn.nodeList.get(0);
+	System.out.println(Arrays.toString(node.data));
+	node = bn.nodeList.get(1);
+	System.out.println(Arrays.toString(node.data));
+	node = bn.nodeList.get(2);
+	System.out.println(Arrays.toString(node.data));
+	
+	bn.addEdge(bn.nodeList.get(0), bn.nodeList.get(1));
+	bn.addEdge(bn.nodeList.get(1), bn.nodeList.get(2));
+	System.out.println(bn.isDag());
+	
+	System.out.println(bn.calculateNijk(bn.nodeList.get(0), 0, 0));
+>>>>>>> Stashed changes
 	}
 
 

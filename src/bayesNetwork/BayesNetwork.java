@@ -9,18 +9,18 @@ import java.util.TreeSet;
 
 public class BayesNetwork {
 	
-	//Data a Bayesian Network needs
+	// Data a Bayesian Network needs
 	int numberOfNodes;
 	int dataLength;
 	Integer[][] data;
-	int[] dataType; //The r_i of the data -> dataType = 2 if data = {0,1} (binary)
+	int[] dataType; // The r_i of the data -> dataType = 2 if data = {0,1} (binary)
 	
-	//Nodes and Edges a BN holds
+	// Nodes and Edges a BN holds
 	LinkedList<Node> nodeList = new LinkedList<Node>();
 	LinkedList<Edge> edgeList = new LinkedList<Edge>();
 	
 	
-	public BayesNetwork(int numberOfNodes){
+	public BayesNetwork(int numberOfNodes){// Class constructor
 		this.numberOfNodes = numberOfNodes;
 		for(int i = 0; i < numberOfNodes; i++){
 			Node node = new Node();
@@ -28,58 +28,61 @@ public class BayesNetwork {
 		}
 	}
 		
-	public BayesNetwork(int numberOfNodes, int dataLength, Integer[][] data, int[] dataType) {
+	public BayesNetwork(int numberOfNodes, int dataLength, Integer[][] data, int[] dataType) { // Function that creates Nodes List
 		super();
 		this.numberOfNodes = numberOfNodes;
 		this.dataLength = dataLength;
 		
-		assert data.length == numberOfNodes;
+		// Checking if data is valid
+		assert data.length == numberOfNodes; 
 		assert dataType.length == numberOfNodes;
 		
+		// Verifying if information on dataLength is correct
 		for(int i = 0; i < numberOfNodes; i++){
 			assert data[i].length == dataLength;	
 		}
 		
 		this.data = data;
-		
-		for(int i = 0; i < numberOfNodes; i++){
+		// Cicle to add nodes to the list 
+		for(int i = 0; i < numberOfNodes; i++){ 
 			Node node = new Node(dataType[i], data[i]);
 			this.nodeList.add(node);
 		}
 		
 	}
 	
-	boolean addEdge(Node parentNode, Node childNode){
+	boolean addEdge(Node parentNode, Node childNode){ // Function that connects father and son Nodes
 		boolean edgeExists = false;
 		int parentCounter = 0;
-		//Check if Edge exists
+		
 		for(Edge e: this.edgeList){
 			if(childNode == e.childNode)
 				parentCounter++;
-			
+			// Check if Edge exists
 			if(e.parentNode.equals(parentNode) && e.childNode.equals(childNode)){
 				edgeExists = true;
 				break;
 			}
-			
+			// Check if child has more than 3 parents
 			if(parentCounter > 3){
 				edgeExists = true;
 				break;
 			
 				}
 			}
+		// If edge not found
 		if(edgeExists == false){
 			//Create a new Edge
 			Edge edge = new Edge(parentNode, childNode);
 
-			//Add Edge to nodes
+			// Add Edge to nodes
 			this.edgeList.add(edge);
 			return true;
 		}
 		return false;
 	}
 	
-	boolean removeEdge(Node parentNode, Node childNode){
+	boolean removeEdge(Node parentNode, Node childNode){// Function that removes connections
 		for(Edge e: this.edgeList)
 			if(e.parentNode.equals(parentNode) && e.childNode.equals(childNode)){
 				this.edgeList.remove(e);
@@ -88,7 +91,7 @@ public class BayesNetwork {
 		return false;
 	}
 	
-	boolean flipEdge(Node parentNode, Node childNode){
+	boolean flipEdge(Node parentNode, Node childNode){// Function to invert parent-child role
 		for(Edge e: this.edgeList)
 			if(e.parentNode.equals(parentNode) && e.childNode.equals(childNode)){
 				e.parentNode = childNode;
@@ -111,7 +114,7 @@ public class BayesNetwork {
 			
 			Node selectedNode = unmarkedNodes.getFirst();
 			
-//		    visit(n)			
+//		   Call function visit(n)			
 			isDag = visitNode(selectedNode, unmarkedNodes, tempMarkedNodes);
 			
 			if(isDag == false) break;
@@ -121,11 +124,11 @@ public class BayesNetwork {
 		return isDag;	
 	}
 
-//	function visit(node n)
+//	function visit(node n), that marks visited nodes
 	private boolean visitNode(Node node, LinkedList<Node> unmarked, LinkedList<Node> tempMarked){
 		boolean isDag = true;
 		
-//	    if n has a temporary mark then stop (not a DAG)
+//	    if n has a temporary mark then stop (not a DAG) ISTO NAO É REDUNDANTE TENDO EM CONTA QUE SO RECEBERÁS NÓS NAO MARCADOS?
 		if(tempMarked.contains(node) == true) return false;
 		else{
 //		    if n is not marked (i.e. has not been visited yet) then
@@ -154,14 +157,14 @@ public class BayesNetwork {
 	
 	public void randomNet(){
 		//Begin random object
-		Random randomGenerator = new Random();
+		Random randomGenerator = new Random(); 
 		boolean actionPerformed = false;
 		
 		do{
 			
 			int randomParentNode = randomGenerator.nextInt(this.numberOfNodes);
 			int randomChildNode = 0;
-			do{
+			do{ 
 			randomChildNode = randomGenerator.nextInt(this.numberOfNodes);
 			}while(randomParentNode==randomChildNode);
 
@@ -170,7 +173,7 @@ public class BayesNetwork {
 			System.out.println(randomParentNode);
 			System.out.println(randomChildNode);
 			
-			switch (randomAction) {
+			switch (randomAction) { // Random net generation
 			case 1: actionPerformed = this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
 					if(actionPerformed) System.out.println("Added Edge");
 				break;
@@ -192,30 +195,30 @@ public class BayesNetwork {
 	}
 
 
-	public int calculateNijk(Node node, int parentConfig, int valueK){
+	public int calculateNijk(Node node, int parentConfig, int valueK){// Function to calculate Nijk
 		//Node - i
 		//Parent Config - j
 		//value K - k
 		//return Nijk
-
+		// Creating a vector to store the node's parent
 		ArrayList<Node> parents = new ArrayList<Node>();
 
 		int countNijk = 0;
-		
+		//Cycle to find node's parent, and add them to the array parents
 		for(Edge e: this.edgeList){
 			if(e.childNode == node){
 				parents.add(e.parentNode);
 			}
 		}
 		Integer[] parentValues = parentValues(parentConfig, parents);
-		TreeSet<Integer> indexNijk = new TreeSet<Integer>();
-		TreeSet<Integer> finalIndexNijk = new TreeSet<Integer>();
+		TreeSet<Integer> indexNijk = new TreeSet<Integer>(); // Set to save indexes of wanted variables( only used for nodes with more than 1 parent )
+		TreeSet<Integer> finalIndexNijk = new TreeSet<Integer>();// Set to store indexes of variables wanted in several parents
 		
 		boolean firstParent = true;
 		boolean secondParent = false;
 		int parentValuePointer = 0;
-
-		if(parents.isEmpty()){
+		
+		if(parents.isEmpty()){// if no parents
 			for(int m=0; m<node.data.length; m++){
 				if(node.data[m]==valueK){
 					countNijk++;
@@ -247,7 +250,7 @@ public class BayesNetwork {
 		}
 		
 		
-
+		// Cycle to find the wanted variables in the Node's data
 		for(int i: finalIndexNijk){
 			if(node.data[i] == valueK) countNijk++;
 		}
@@ -258,6 +261,7 @@ public class BayesNetwork {
 
 	//Given j-config returns array of j_i value of each parent
 	public Integer[] parentValues(int parentConfig, ArrayList<Node> parents){
+		
 		List<Integer> parentValues = new ArrayList<Integer>();
 		
 		int numberOfParents = parents.size();
@@ -280,7 +284,7 @@ public class BayesNetwork {
 		return finalArray;
 	}
 
-	public int netComplexity(){
+	public int netComplexity(){ // Function to calculate parameter B, network complexity
 		
 		int maxParentConfigs = 1;
 		int complexity = 0;
@@ -298,31 +302,30 @@ public class BayesNetwork {
 	}
 	
 	
-	public double logLike(){
+	public double logLike(){ // Function to calculate log-likelihood
 		int Nij = 0;
 		double loglike = 0;
 		int maxParentConfigs = 1;
+		
 		for(Node n: this.nodeList){
-
 			for(Edge e: this.edgeList){ //for each edge
 				if(e.childNode == n){ //if node is a child in that edge
 					maxParentConfigs *= e.parentNode.dataType; //get parent dataType and multiply = q_i
 				}
 			}
 
-
-			for(int i=0; i< maxParentConfigs; i++){
+			for(int i=0; i< maxParentConfigs; i++){//cycle to run all parent configurations
 				Nij = 0;
-				for(int k = 0; k < n.dataType; k++){
+				for(int k = 0; k < n.dataType; k++){//cycle to run all the node's variables
 					Nij += calculateNijk(n, i, k);
 				}
 
-				for(int k = 0; k < n.dataType; k++){
+				for(int k = 0; k < n.dataType; k++){ // erhmmmm... what ? lol !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!???
 					int auxNijk = calculateNijk(n, i, k);
 
 					//System.out.println(auxNijk  + " * log( " + auxNijk + " / " + Nij + " )");
 
-					if(auxNijk != 0 && Nij !=0){
+					if(auxNijk != 0 && Nij !=0){ // arithmetics
 						double auxDiv = (double) auxNijk / (double) Nij;
 						loglike += (double) auxNijk * (Math.log(auxDiv) / Math.log(2));
 					}
@@ -336,7 +339,7 @@ public class BayesNetwork {
 		return loglike;
 	}
 
-	public double mdl(){
+	public double mdl(){ // Function that calculates MDL
 		return this.logLike() - 1/2 * Math.log(this.nodeList.size())*(double) this.netComplexity();
 	}
 	
@@ -357,21 +360,21 @@ public class BayesNetwork {
 		for(Node n: this.nodeList){
 			for(Node m: this.nodeList){
 				
-				if(this.addEdge(n, m)){
-					if(this.isDag() != true){
+				if(this.addEdge(n, m)){ // adds new edge
+					if(this.isDag() != true){ // checks if net is a dag, if not, it is removed
 						this.edgeList.removeLast();
 					}
 					else{
-						if(firstScore){
-							bestScore[0] = this.mdl();
-							changedEdge[0] = this.edgeList.getLast();
+						if(firstScore){// dag is confirmed
+							bestScore[0] = this.mdl(); // mdl score is saved in array
+							changedEdge[0] = this.edgeList.getLast(); // stores the last changed edge
 							firstScore = false;
 						}
-						else{
+						else{// comparing new score with the previous
 							double auxMDL = this.mdl();
-							if(auxMDL > bestScore[0]){
+							if(auxMDL > bestScore[0]){// if better score, store
 								bestScore[0] = auxMDL;
-								changedEdge[0] = this.edgeList.getLast();
+								changedEdge[0] = this.edgeList.getLast();//overwrite last entry
 							}
 							this.edgeList.removeLast();
 						}
@@ -383,21 +386,21 @@ public class BayesNetwork {
 		firstScore = true;
 		//Check scores of all flip-moves
 		for(Edge e: this.edgeList){
-			if(e != lastEdge){
-				this.flipEdge(e.parentNode, e.childNode);
-				if(this.isDag() != true)
+			if(e != lastEdge){ 
+				this.flipEdge(e.parentNode, e.childNode); // flips edge
+				if(this.isDag() != true)// checks if net still a dag, if not, revert flip
 					this.flipEdge(e.childNode, e.parentNode);
 				else{
-					if(firstScore){
-						bestScore[1] = this.mdl();
-						changedEdge[1] = e;
+					if(firstScore){// dag is confirmed
+						bestScore[1] = this.mdl();// mdl score is saved in array
+						changedEdge[1] = e; // stores the last fliped edge
 						firstScore = false;
 					}
-					else{
+					else{// comparing new score with the previous
 						double auxMDL = this.mdl();
-						if(auxMDL > bestScore[1]){
+						if(auxMDL > bestScore[1]){// if better score, store
 							bestScore[1] = auxMDL;
-							changedEdge[1] = e;
+							changedEdge[1] = e; //overwrite last entry
 						}
 
 					}
@@ -413,17 +416,17 @@ public class BayesNetwork {
 		for(int i = 0; i<this.edgeList.size()-1; i++){
 			Edge e = this.edgeList.get(i);
 			this.removeEdge(e.parentNode, e.childNode);
-
+			// no need to check if it is still a dag
 			if(firstScore){
-				bestScore[2] = this.mdl();
-				changedEdge[2] = e;
+				bestScore[2] = this.mdl();// mdl score is saved in array
+				changedEdge[2] = e;// stores the last removed edge
 				firstScore = false;
 			}
 			else{
 				double auxMDL = this.mdl();
-				if(auxMDL > bestScore[2]){
+				if(auxMDL > bestScore[2]){// if better score, store
 					bestScore[2] = auxMDL;
-					changedEdge[2] = e;
+					changedEdge[2] = e; //overwrite last entry
 				}
 			}
 		}

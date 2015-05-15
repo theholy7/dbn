@@ -3,7 +3,7 @@ package bayesNetwork;
 
 public class Edge {
 	
-	//An Edge goes from a Parent to a Child
+	//An Edge connects a Parent to a Child
 	Node parentNode = null;
 	Node childNode = null;
 
