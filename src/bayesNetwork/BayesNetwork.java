@@ -51,12 +51,22 @@ public class BayesNetwork {
 	
 	boolean addEdge(Node parentNode, Node childNode){
 		boolean edgeExists = false;
-		
+		int parentCounter = 0;
 		//Check if Edge exists
-		for(Edge e: this.edgeList)
+		for(Edge e: this.edgeList){
+			if(childNode == e.childNode)
+				parentCounter++;
+			
 			if(e.parentNode.equals(parentNode) && e.childNode.equals(childNode)){
 				edgeExists = true;
 				break;
+			}
+			
+			if(parentCounter > 3){
+				edgeExists = true;
+				break;
+			
+				}
 			}
 		if(edgeExists == false){
 			//Create a new Edge
@@ -328,6 +338,106 @@ public class BayesNetwork {
 
 	public double mdl(){
 		return this.logLike() - 1/2 * Math.log(this.nodeList.size())*(double) this.netComplexity();
+	}
+	
+	public double scoring(){
+		double result = 0;
+		double[] bestScore = new double[3];
+		Edge lastEdge = this.edgeList.getLast();
+		Edge[] changedEdge = new Edge[3];
+		boolean firstScore = true;
+		
+		//Simple greedy hill climb
+		//Generate a simple random starting network
+		//this.randomNet();
+		
+		
+		
+		//Check scores of all add-moves
+		for(Node n: this.nodeList){
+			for(Node m: this.nodeList){
+				
+				if(this.addEdge(n, m)){
+					if(this.isDag() != true){
+						this.edgeList.removeLast();
+					}
+					else{
+						if(firstScore){
+							bestScore[0] = this.mdl();
+							changedEdge[0] = this.edgeList.getLast();
+							firstScore = false;
+						}
+						else{
+							double auxMDL = this.mdl();
+							if(auxMDL > bestScore[0]){
+								bestScore[0] = auxMDL;
+								changedEdge[0] = this.edgeList.getLast();
+							}
+							this.edgeList.removeLast();
+						}
+					}
+				}
+			}
+		}
+		
+		firstScore = true;
+		//Check scores of all flip-moves
+		for(Edge e: this.edgeList){
+			if(e != lastEdge){
+				this.flipEdge(e.parentNode, e.childNode);
+				if(this.isDag() != true)
+					this.flipEdge(e.childNode, e.parentNode);
+				else{
+					if(firstScore){
+						bestScore[1] = this.mdl();
+						changedEdge[1] = e;
+						firstScore = false;
+					}
+					else{
+						double auxMDL = this.mdl();
+						if(auxMDL > bestScore[1]){
+							bestScore[1] = auxMDL;
+							changedEdge[1] = e;
+						}
+
+					}
+				}
+			}
+		}
+		
+		
+		
+		//Check scores of all remove-moves
+		firstScore = true;
+		
+		for(int i = 0; i<this.edgeList.size()-1; i++){
+			Edge e = this.edgeList.get(i);
+			this.removeEdge(e.parentNode, e.childNode);
+
+			if(firstScore){
+				bestScore[2] = this.mdl();
+				changedEdge[2] = e;
+				firstScore = false;
+			}
+			else{
+				double auxMDL = this.mdl();
+				if(auxMDL > bestScore[2]){
+					bestScore[2] = auxMDL;
+					changedEdge[2] = e;
+				}
+			}
+		}
+		
+		System.out.println("BS-add " + bestScore[0]);
+		System.out.println("BS-flip " + bestScore[1]);
+		System.out.println("BS-remove " + bestScore[2]);
+		
+		 result = bestScore[0];
+		 for(int i = 1; i<3; i++)
+			 if(bestScore[i]>result)
+				 result = bestScore[i];
+		
+		return result;
 	}
 	
 
