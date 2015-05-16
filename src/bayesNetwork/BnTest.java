@@ -1,69 +1,66 @@
 package bayesNetwork;
-import java.util.Arrays;
 
 public class BnTest {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
-		int nNodes=3;
-		int dataSize=7;
+		int nNodes=6;
+		int dataSize=3;
 
 
-		Integer[][] variables = {{0,0,1,1,0,1,1}, {0,1,2,1,1,2,0}, {0,1,0,1,0,0,1}};
-		int[] dataTypes={2,3,2};
-
-		BayesNetwork bn = new BayesNetwork(nNodes, dataSize, variables, dataTypes);
-<<<<<<< Updated upstream
-
-
-		Node node = bn.nodeList.get(0);
-		System.out.println(Arrays.toString(node.data));
-		node = bn.nodeList.get(1);
-		System.out.println(Arrays.toString(node.data));
-		node = bn.nodeList.get(2);
-		System.out.println(Arrays.toString(node.data));
+		Integer[][] variables = {{0,3,1}, {3,3,3}, {3,1,0}, {1,0,3}, {2,3,3}, {3,3,0}, {0,2,3}};
+		int[] dataTypes={4,4,4,4,4,4};
+		String[] names = {"a_0", "b_0", "c_0", "d_0", "e_0", "f_0", "g_0"};
+		Score score = new Score();
 		
-		bn.randomNet();
+		BayesNetwork bnInit = new BayesNetwork(nNodes, dataSize, variables, dataTypes, names);
 		
-		System.out.println(bn.scoring());
 		
-		//	//bn.addEdge(bn.nodeList.get(0), bn.nodeList.get(1));
-		//	//bn.addEdge(bn.nodeList.get(1), bn.nodeList.get(2));
-		//	System.out.println(bn.isDag());
-		//	
-		//	System.out.println(bn.calculateNijk(bn.nodeList.get(0), 0, 0));
-		//	bn.logLike();
-		//	System.out.println("1- " + bn.mdl());
-		//	bn.randomNet();
-		//	System.out.println("2- " + bn.mdl());
-		//	bn.randomNet();
-		//	System.out.println("3- " + bn.mdl());
-		//	bn.randomNet();
-		//	System.out.println("4- " + bn.mdl());
-		//	bn.randomNet();
-		//	System.out.println("5- " + bn.mdl());
-		//	bn.randomNet();
-		//	System.out.println("6- " + bn.mdl());
-		//	bn.randomNet();
-		//	System.out.println("7- " + bn.mdl());
-=======
-		for(int i=0; i<7; i++){
-			System.out.println(bn.nodeList.getFirst().data[i]);
-		}
-	Node node = bn.nodeList.get(0);
-	System.out.println(Arrays.toString(node.data));
-	node = bn.nodeList.get(1);
-	System.out.println(Arrays.toString(node.data));
-	node = bn.nodeList.get(2);
-	System.out.println(Arrays.toString(node.data));
-	
-	bn.addEdge(bn.nodeList.get(0), bn.nodeList.get(1));
-	bn.addEdge(bn.nodeList.get(1), bn.nodeList.get(2));
-	System.out.println(bn.isDag());
-	
-	System.out.println(bn.calculateNijk(bn.nodeList.get(0), 0, 0));
->>>>>>> Stashed changes
+		bnInit.addEdge(bnInit.nodeList.get(0), bnInit.nodeList.get(3));
+		System.out.println(bnInit.isDag());
+		bnInit.addEdge(bnInit.nodeList.get(0), bnInit.nodeList.get(2));
+		System.out.println(bnInit.isDag());
+		bnInit.addEdge(bnInit.nodeList.get(2), bnInit.nodeList.get(4));
+		System.out.println(bnInit.isDag());
+		bnInit.addEdge(bnInit.nodeList.get(2), bnInit.nodeList.get(5));
+		System.out.println(bnInit.isDag());
+		bnInit.addEdge(bnInit.nodeList.get(4), bnInit.nodeList.get(0));
+		System.out.println(bnInit.isDag());
+		
+		
+		
+		
+		
+//		bnInit.randomNet();
+//		
+//		BayesNetwork bnFinal = new BayesNetwork(bnInit);
+//		BayesNetwork bnPrime = new BayesNetwork(bnInit);
+//		
+//		boolean increasingResult = true;
+//		
+//		System.out.println(bnInit.edgeList);
+//		System.out.println(score.mdl(bnInit));
+//		
+//		
+//		while(increasingResult){
+//			BayesNetwork bnPrime2 = new BayesNetwork(score.argMax(bnPrime));
+//			System.out.println("Meio " + bnPrime2.edgeList);
+//			System.out.println("Meio " + score.mdl(bnPrime2));
+//			
+//			if(score.mdl(bnPrime2) > score.mdl(bnFinal))
+//				bnFinal = new BayesNetwork(bnPrime2);
+//			else
+//				increasingResult = false;
+//			
+//			
+//			bnPrime = new BayesNetwork(bnPrime2);
+//			System.out.println(bnPrime.isDag());
+//		}
+//		
+//		System.out.println(bnFinal.edgeList);
+//		System.out.println(score.mdl(bnFinal));
+		
 	}
 
 
