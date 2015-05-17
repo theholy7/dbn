@@ -111,17 +111,20 @@ public class MainApp {
 			
 			DynamicBayesNetwork dbn = new DynamicBayesNetwork();
 			
-			for(int i = 0; i < numberOfNodes; i++){
-				Integer[] data = new Integer[tableTTp1[i].size()];
-
-				data = tableTTp1[i].toArray(data);
-				Node node = new Node(dataTypes[i], data, (i+""));
+			for(int k = 0; k < 2; k++)
+				for(int i = 0; i < numberOfNodes; i++){
+				Integer[] data = new Integer[tableTTp1[i + k*numberOfNodes].size()];
+				data = tableTTp1[i + k*numberOfNodes].toArray(data);
+				
+				Node node = new Node(dataTypes[i], data, (i + k*numberOfNodes+""));
 
 				dbn.addNode(node);
 				
 			}
 			
+			dbn.randomNet();
 			
+			System.out.println(dbn);
 			
 			
 			
