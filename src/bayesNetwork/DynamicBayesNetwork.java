@@ -17,6 +17,13 @@ public class DynamicBayesNetwork {
 	public DynamicBayesNetwork(){
 	}
 	
+	public DynamicBayesNetwork(DynamicBayesNetwork dbn){ //copy constructor
+		
+		this.nodeList = dbn.nodeList;
+		for(Edge e: dbn.edgeList)
+			this.edgeList.add(e.clone());
+	}
+	
 	public void addNode(Node n){
 		this.nodeList.add(n);
 		
@@ -135,6 +142,28 @@ public class DynamicBayesNetwork {
 		return loglike;
 	}
 	
+	//Net Complexity
+	public int netComplexity(){ // Function to calculate parameter B, network complexity
+
+		int maxParentConfigs = 1;
+		int complexity = 0;
+
+		for(Node n: nodeList){ //for each node
+			for(Edge e: edgeList){ //for each edge
+				if(e.childNode == n){ //if node is a child in that edge
+					maxParentConfigs *= e.parentNode.dataType; //get parent dataType and multiply = q_i
+				}
+			}
+			complexity += (n.dataType - 1) *  maxParentConfigs; //sum this for all nodes - get complexity of net
+		}
+
+		return complexity;
+	}
+	
+	//Net MDL
+	public double mdl(){ // Function that calculates MDL
+		return this.logLike() - 1/2 * Math.log(nodeList.size())*(double) this.netComplexity();
+	}
 	
 	
 	//Given j-config returns array of j_i value of each parent
@@ -251,11 +280,85 @@ public class DynamicBayesNetwork {
 
 		this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
 
+		randomParentNode = 4;
+		randomChildNode = 5;
+
+		this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
+
+
 		randomParentNode = 1;
 		randomChildNode = 5;
 
 		this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
+
+//		randomParentNode = 5;
+//		randomChildNode = 3;
+//
+//		this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
 	}
+	
+	
+	// isDag 
+	
+	
+	public boolean isDag(){
+//		Check if network is DAG
+		boolean isDag = true;
+//		L ← Empty list that will contain the sorted nodes
+		LinkedList<Node> unmarkedNodes = new LinkedList<Node>(this.nodeList);
+		LinkedList<Node> tempMarkedNodes = new LinkedList<Node>();
+		
+//		while there are unmarked nodes do
+		while(unmarkedNodes.isEmpty() == false){
+//		    select an unmarked node n
+			
+			Node selectedNode = unmarkedNodes.getFirst();
+			
+//		   Call function visit(n)			
+			isDag = visitNode(selectedNode, unmarkedNodes, tempMarkedNodes);
+			
+			if(isDag == false) break;
+			
+		}
+		
+		return isDag;	
+	}
+
+//	function visit(node n), that marks visited nodes
+	private boolean visitNode(Node node, LinkedList<Node> unmarked, LinkedList<Node> tempMarked){
+		boolean isDag = true;
+		
+//	    if n has a temporary mark then stop (not a DAG) ISTO NAO É REDUNDANTE TENDO EM CONTA QUE SO RECEBERÁS NÓS NAO MARCADOS?
+		if(tempMarked.contains(node) == true)
+			return false;
+		if(unmarked.contains(node)){
+//		    if n is not marked (i.e. has not been visited yet) then
+//	        mark n temporarily
+			tempMarked.add(node);
+			
+//	        for each node m with an edge from n to m do
+			for(Edge e: edgeList){
+				if(e.parentNode == node){
+//		            visit(m)
+					isDag = visitNode(e.childNode, unmarked, tempMarked);
+				}
+			}
+//	        mark n permanently
+			unmarked.remove(node);
+//	        unmark n temporarily
+			tempMarked.remove(node);
+//	        add n to head of L
+	
+			
+			return isDag;
+			
+		}
+		return isDag;
+	}
+
+	
+	
+	// isDag
 
 	@Override
 	public String toString() {
@@ -263,5 +366,144 @@ public class DynamicBayesNetwork {
 				+ edgeList + "]";
 	}
 	
+	
+	//Get net that maximizes the score
+	public DynamicBayesNetwork argMax(){
+		DynamicBayesNetwork dbn = new DynamicBayesNetwork(this);
+		double result = 0;
+		double[] bestScore = new double[3];
+		Edge lastEdge = dbn.edgeList.getLast();
+		Edge[] changedEdge = new Edge[3];
+		boolean firstScore = true;
+		
+		//Simple greedy hill climb
+		//Generate a simple random starting network
+		//this.randomNet();
+		
+		
+		
+		//Check scores of all add-moves
+		for(Node n: dbn.nodeList){
+			for(Node m: dbn.nodeList){
+				
+				if(dbn.addEdge(n, m)){ // adds new edge
+					if(dbn.isDag() != true){ // checks if net is a dag, if not, it is removed
+						dbn.edgeList.removeLast();
+					}
+					else{
+						if(firstScore){// dag is confirmed
+							bestScore[0] = dbn.mdl(); // mdl score is saved in array
+							changedEdge[0] = dbn.edgeList.getLast(); // stores the last changed edge
+							firstScore = false;
+						}
+						else{// comparing new score with the previous
+							double auxMDL = dbn.mdl();
+							if(auxMDL > bestScore[0]){// if better score, store - and store best add-action
+								bestScore[0] = auxMDL;
+								changedEdge[0] = dbn.edgeList.getLast();
+							}
+						}
+						dbn.edgeList.removeLast();
+					}
+				}
+			}
+		}
+		
+//		System.out.println("EdgeList add: " + dbn.edgeList);
+		
+		
+		firstScore = true;
+		//Check scores of all flip-moves
+		for(int i=0; i< dbn.edgeList.size(); i++){
+			Edge e = dbn.edgeList.get(0);
+			if(e != lastEdge){ 
+				dbn.flipEdge(e.parentNode, e.childNode); // flips edge
+//				System.out.println(dbn.edgeList);
+				
+				if(dbn.isDag() != true)// checks if net still a dag, if not, revert flip
+					dbn.flipEdge(e.parentNode, e.childNode);
+				
+				else{
+					if(firstScore){// dag is confirmed
+						bestScore[1] = dbn.mdl();// mdl score is saved in array
+						changedEdge[1] = e; // stores the last fliped edge
+						firstScore = false;
+					}
+					else{// comparing new score with the previous
+						double auxMDL = dbn.mdl();
+						if(auxMDL > bestScore[1]){// if better score, store
+							bestScore[1] = auxMDL;
+							changedEdge[1] = e; //overwrite last entry
+						}
+					}
+					dbn.flipEdge(e.parentNode, e.childNode);
+				}
+			}
+			else{
+				dbn.edgeList.remove(e);
+				dbn.edgeList.addLast(e);
+			}
+		}
+		
+//		System.out.println("EdgeList flip: " + bn.edgeList);
+		
+		//Check scores of all remove-moves
+		firstScore = true;
+		
+		for(int i = 0; i<dbn.edgeList.size(); i++){
+			Edge e = dbn.edgeList.getFirst();
+			
+			if(e==lastEdge){
+				dbn.edgeList.remove(e);
+				dbn.edgeList.addLast(e);
+			}
+			else{
+				dbn.removeEdge(e.parentNode, e.childNode);
+				// no need to check if it is still a dag
+				if(firstScore){
+					bestScore[2] = dbn.mdl();// mdl score is saved in array
+					changedEdge[2] = e;// stores the last removed edge
+					firstScore = false;
+				}
+				else{
+					double auxMDL = dbn.mdl();
+					if(auxMDL > bestScore[2]){// if better score, store
+						bestScore[2] = auxMDL;
+						changedEdge[2] = e; //overwrite last entry
+					}
+				}
+	
+				dbn.edgeList.addLast(e);
+			}
+		}
+		
+//		System.out.println("EdgeList remove: " + bn.edgeList);
+//		
+//		System.out.println("BS-add " + bestScore[0]);
+//		System.out.println("BS-flip " + bestScore[1]);
+//		System.out.println("BS-remove " + bestScore[2]);
+		
+		
+		int bestScoreIndex = 0;
+		for(int i = 0; i < 3; i++)
+			if(bestScore[i] < 0){
+				result = bestScore[i];
+				bestScoreIndex = i;
+				break;
+			}
+				
+	
+		 for(int k = bestScoreIndex; k<3; k++)
+			 if(bestScore[k]>result && bestScore[k]!=0){
+				 result = bestScore[k];
+				 bestScoreIndex = k;
+			 }
+		 
+		 
+		
+//		System.out.println(bestScoreIndex);
+		dbn.edgeList.add(changedEdge[bestScoreIndex]); 
+		return dbn;
+	}
 
 }

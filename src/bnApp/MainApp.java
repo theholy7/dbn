@@ -84,7 +84,7 @@ public class MainApp {
 				for(int i=1; i <= timeSlices; i++){
 					try{
 						for(int n=0; n < numberOfNodes; n++){
-							tableTTp1[3+n].add(Integer.parseInt(collumnsOfLine[linha][numberOfNodes * (i) + n]));
+							tableTTp1[numberOfNodes+n].add(Integer.parseInt(collumnsOfLine[linha][numberOfNodes * (i) + n]));
 						}
 						for(int n=0; n < numberOfNodes; n++){
 							try{
@@ -100,13 +100,9 @@ public class MainApp {
 					}
 						
 				}
+			for(int i = 0; i < numberOfNodes * 2; i++)
+				System.out.println(Arrays.toString(tableTTp1[i].toArray()));
 			
-			System.out.println(Arrays.toString(tableTTp1[0].toArray()));
-			System.out.println(Arrays.toString(tableTTp1[1].toArray()));
-			System.out.println(Arrays.toString(tableTTp1[2].toArray()));
-			System.out.println(Arrays.toString(tableTTp1[3].toArray()));
-			System.out.println(Arrays.toString(tableTTp1[4].toArray()));
-			System.out.println(Arrays.toString(tableTTp1[5].toArray()));
 			
 			DynamicBayesNetwork dbn = new DynamicBayesNetwork();
 			
@@ -125,9 +121,14 @@ public class MainApp {
 			
 			Logger.log(dbn.toString());
 			
-			dbn.logLike();
+			Logger.log("LL " + dbn.logLike());
+			Logger.log("B " + dbn.netComplexity());
+			Logger.log("MDL " + dbn.mdl());
+			Logger.log("isDag?" + dbn.isDag());
 			
 			
+			Logger.log(dbn.argMax().toString());
+			Logger.log(dbn.toString());
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
