@@ -20,11 +20,13 @@ public class Node {
 		this.dataType = dataType;
 		this.data = data;
 	}
-
+	
 	@Override
 	public String toString() {
 		return "Node " + name;
 	}
 	
-
+	public Node clone() {
+		return new Node(this.dataType, this.data, this.name);
+	}
 }

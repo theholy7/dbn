@@ -19,5 +19,7 @@ public class Edge {
 				+ "]";
 	}
 	
-	
+	public Edge clone() {
+		return new Edge(this.parentNode, this.childNode);
+	}
 }

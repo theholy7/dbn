@@ -1,6 +1,7 @@
 package bayesNetwork;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -33,8 +34,11 @@ public class BayesNetwork {
 		this.dataLength = bn.dataLength;
 		this.data = bn.data;
 		this.dataType = bn.dataType;
-		this.nodeList = new LinkedList<Node>(bn.nodeList);
-		this.edgeList = new LinkedList<Edge>(bn.edgeList);
+		this.nodeList = bn.nodeList;
+	
+		for(Edge e: bn.edgeList)
+			this.edgeList.add(e.clone());
+				
 	}
 		
 	public BayesNetwork(int numberOfNodes, int dataLength, Integer[][] data, int[] dataType, String[] names) { // Function that creates Nodes List
@@ -303,6 +307,12 @@ public class BayesNetwork {
 		
 		return finalArray;
 	}
-	
 
+	@Override
+	public String toString() {
+		return "BayesNetwork [numberOfNodes=" + numberOfNodes + ", dataLength="
+				+ dataLength + ", data=" + Arrays.toString(data)
+				+ ", dataType=" + Arrays.toString(dataType) + ", nodeList="
+				+ nodeList + ", edgeList=" + edgeList + "]" + this.hashCode();
+	}
 }
