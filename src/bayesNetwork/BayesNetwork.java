@@ -110,7 +110,7 @@ public class BayesNetwork {
 			}
 		return false;
 	}
-	
+
 	boolean flipEdge(Node parentNode, Node childNode){// Function to invert parent-child role
 		for(Edge e: this.edgeList)
 			if(e.parentNode.equals(parentNode) && e.childNode.equals(childNode)){

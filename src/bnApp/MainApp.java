@@ -9,7 +9,6 @@ import java.util.LinkedList;
 
 import bayesNetwork.*;
 
-
 public class MainApp {
 	
 	public static void main(String[] args) {
@@ -18,7 +17,7 @@ public class MainApp {
 		System.out.println("Working Directory = " + System.getProperty("user.dir"));
 		
 		//READ FILE
-		String fileName = "train-data.csv";
+		String fileName = "train-data-simple.csv";
 		
 		try {
 			//String with the file
@@ -124,9 +123,9 @@ public class MainApp {
 			
 			dbn.randomNet();
 			
-			System.out.println(dbn);
+			Logger.log(dbn.toString());
 			
-			
+			dbn.logLike();
 			
 			
 			
