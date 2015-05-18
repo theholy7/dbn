@@ -19,12 +19,13 @@ public class DynamicBayesNetwork {
 	
 	//The thetas of each var are a characteristic of the Network
 	public double[][] arrayOfThetas;
+	int scoreFunction;
 	
 	public DynamicBayesNetwork(){
 	}
 	
 	public DynamicBayesNetwork(DynamicBayesNetwork dbn){ //copy constructor
-		
+		this.scoreFunction = dbn.scoreFunction;
 		this.nodeList = dbn.nodeList;
 		for(Edge e: dbn.edgeList)
 			this.edgeList.add(e.clone());
@@ -74,6 +75,15 @@ public class DynamicBayesNetwork {
 		// Add Edge to nodes
 		this.edgeList.add(edge);
 		return true;
+	}
+	
+	public void setScore(String s){
+		if(s.toLowerCase().equals("ll"))
+			this.scoreFunction = 1;
+		else if(s.toLowerCase().equals("mdl"))
+			this.scoreFunction = 2;
+		else System.out.println("Not setting Score");
+		
 	}
 	
 	boolean removeEdge(Node parentNode, Node childNode){// Function that removes connections
@@ -303,12 +313,12 @@ public class DynamicBayesNetwork {
 		// AUHDAJFDSFLÇDASFJKLÇDASKAKDAJSFKLÇDJSAFKLÇADKS !!!!!!!
 //		Logger.log("isDag?" + this.isDag());
 		randomParentNode = 0;
-		randomChildNode = 7;
+		randomChildNode = 3;
 
 		this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
 //		Logger.log("isDag?" + this.isDag());
-		randomParentNode = 5;
-		randomChildNode = 7;
+		randomParentNode = 1;
+		randomChildNode = 3;
 
 		this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
 ////		Logger.log("isDag?" + this.isDag());
@@ -415,14 +425,23 @@ public class DynamicBayesNetwork {
 					}
 					else{
 						if(firstScore){// dag is confirmed
-							bestScore[0] = dbn.mdl(); // mdl score is saved in array
+							if(scoreFunction == 1)
+								bestScore[0] = dbn.logLike();
+							if(scoreFunction == 2)
+								bestScore[0] = dbn.mdl(); // mdl score is saved in array
 							changedEdge[0] = dbn.edgeList.getLast(); // stores the last changed edge
 							firstScore = false;
 						}
 						else{// comparing new score with the previous
-							double auxMDL = dbn.mdl();
-							if(auxMDL > bestScore[0]){// if better score, store - and store best add-action
-								bestScore[0] = auxMDL;
+							double auxScore = 0;
+							if(scoreFunction == 1)
+								auxScore = dbn.logLike();
+							if(scoreFunction == 2)
+								auxScore = dbn.mdl(); // mdl score is saved in array
+							
+							
+							if(auxScore > bestScore[0]){// if better score, store - and store best add-action
+								bestScore[0] = auxScore;
 								changedEdge[0] = dbn.edgeList.getLast();
 							}
 						}
@@ -454,14 +473,22 @@ public class DynamicBayesNetwork {
 				else{
 					
 					if(firstScore){// dag is confirmed
-						bestScore[1] = dbn.mdl();// mdl score is saved in array
+						if(scoreFunction == 1)
+							bestScore[1] = dbn.logLike();// mdl score is saved in array
+						if(scoreFunction == 2)
+							bestScore[1] = dbn.mdl();
 						changedEdge[1] = e; // stores the last fliped edge
 						firstScore = false;
 					}
 					else{// comparing new score with the previous
-						double auxMDL = dbn.mdl();
-						if(auxMDL > bestScore[1]){// if better score, store
-							bestScore[1] = auxMDL;
+						double auxScore = 0;
+						if(scoreFunction == 1)
+							auxScore = dbn.logLike();// mdl score is saved in array
+						if(scoreFunction == 2)
+							auxScore = dbn.mdl();
+						
+						if(auxScore > bestScore[1]){// if better score, store
+							bestScore[1] = auxScore;
 							changedEdge[1] = e; //overwrite last entry
 						}
 					}
@@ -496,14 +523,22 @@ public class DynamicBayesNetwork {
 				dbn.removeEdge(e.parentNode, e.childNode);
 				// no need to check if it is still a dag
 				if(firstScore){
-					bestScore[2] = dbn.mdl();// mdl score is saved in array
+					if(scoreFunction == 1)
+						bestScore[2] = dbn.logLike();// mdl score is saved in array
+					if(scoreFunction == 2)
+						bestScore[2] = dbn.mdl();
 					changedEdge[2] = e;// stores the last removed edge
 					firstScore = false;
 				}
 				else{
-					double auxMDL = dbn.mdl();
-					if(auxMDL > bestScore[2]){// if better score, store
-						bestScore[2] = auxMDL;
+					double auxScore = 0;
+					if(scoreFunction == 1)
+						auxScore = dbn.logLike();// mdl score is saved in array
+					if(scoreFunction == 2)
+						auxScore = dbn.mdl();
+					
+					if(auxScore > bestScore[2]){// if better score, store
+						bestScore[2] = auxScore;
 						changedEdge[2] = e; //overwrite last entry
 					}
 				}
@@ -573,10 +608,18 @@ public class DynamicBayesNetwork {
 			//System.out.println("Meio " + dbnPrime2.mdl());
 			System.out.println(dbnPrime2.logLike() + " " + dbnFinal.logLike());
 			System.out.println(dbnPrime2.mdl() + " " + dbnFinal.mdl());
-			if(dbnPrime2.mdl() > dbnFinal.mdl())
-				dbnFinal = new DynamicBayesNetwork(dbnPrime2);
-			else
-				increasingResult = false;
+			if(scoreFunction == 1){
+				if(dbnPrime2.logLike() > dbnFinal.logLike())
+					dbnFinal = new DynamicBayesNetwork(dbnPrime2);
+				else
+					increasingResult = false;
+			}
+			if(scoreFunction == 2){
+				if(dbnPrime2.mdl() > dbnFinal.mdl())
+					dbnFinal = new DynamicBayesNetwork(dbnPrime2);
+				else
+					increasingResult = false;
+			}
 			
 			
 			dbnPrime = new DynamicBayesNetwork(dbnPrime2);

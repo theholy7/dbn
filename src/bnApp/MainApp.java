@@ -17,7 +17,7 @@ public class MainApp {
 		System.out.println("Working Directory = " + System.getProperty("user.dir"));
 		
 		//READ FILE
-		String fileName = "train-data-simple.csv";
+		String fileName = "train-data-2.csv";
 		
 		try {
 			//String with the file
@@ -105,6 +105,7 @@ public class MainApp {
 			
 			
 			DynamicBayesNetwork dbn = new DynamicBayesNetwork();
+			dbn.setScore("MDL");
 			
 			for(int k = 0; k < 2; k++)
 				for(int i = 0; i < numberOfNodes; i++){
@@ -133,7 +134,10 @@ public class MainApp {
 			
 			dbn2.calculateTijk();
 			
+			System.out.println(Arrays.toString(dbn2.arrayOfThetas[0]));
 			System.out.println(Arrays.toString(dbn2.arrayOfThetas[1]));
+			System.out.println(Arrays.toString(dbn2.arrayOfThetas[2]));
+			System.out.println(Arrays.toString(dbn2.arrayOfThetas[3]));
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
