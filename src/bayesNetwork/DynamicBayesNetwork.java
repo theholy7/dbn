@@ -1,5 +1,6 @@
 package bayesNetwork;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -47,7 +48,7 @@ public class DynamicBayesNetwork {
 		}
 		
 		//Check if from t+1 to t
-		if(this.nodeList.indexOf(parentNode)>getNumberOfNodes() && this.nodeList.indexOf(childNode)<getNumberOfNodes())
+		if(this.nodeList.indexOf(parentNode)>=getNumberOfNodes() && this.nodeList.indexOf(childNode)<getNumberOfNodes())
 			return false;
 		
 		//Check if from t to t
@@ -290,16 +291,16 @@ public class DynamicBayesNetwork {
 			randomChildNode = randomGenerator.nextInt(getNumberOfNodes()) + getNumberOfNodes();
 		}while(randomParentNode==randomChildNode);
 
-		this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
+		//this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
 		// end here!!
 		
 		// TEMPORARY!!!!!!!!!!
 		// AUHDAJFDSFLÇDASFJKLÇDASKAKDAJSFKLÇDJSAFKLÇADKS !!!!!!!
 //		Logger.log("isDag?" + this.isDag());
-//		randomParentNode = 0;
-//		randomChildNode = 3;
-//
-//		this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
+		randomParentNode = 0;
+		randomChildNode = 3;
+
+		this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
 //		Logger.log("isDag?" + this.isDag());
 //		randomParentNode = 4;
 //		randomChildNode = 5;
@@ -399,16 +400,17 @@ public class DynamicBayesNetwork {
 		
 		
 		//Check scores of all add-moves
-		
+		int nodeTries = 0;
 		for(Node n: dbn.nodeList){
-			for(Node m: dbn.nodeList){
-		
+			for(Node m: dbn.nodeList){	
 		
 				if(dbn.addEdge(n, m)){ // adds new edge
 					if(dbn.isDag() != true){ // checks if net is a dag, if not, it is removed
 						dbn.edgeList.removeLast();
 					}
 					else{
+						System.out.println(dbn.edgeList.getLast());
+						nodeTries++;
 						if(firstScore){// dag is confirmed
 							bestScore[0] = dbn.mdl(); // mdl score is saved in array
 							changedEdge[0] = dbn.edgeList.getLast(); // stores the last changed edge
@@ -425,6 +427,15 @@ public class DynamicBayesNetwork {
 					}
 				}
 			}
+			System.out.println(nodeTries);
+			nodeTries = 0;
+		}
+		
+		try {
+			System.in.read();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
 		
 //		System.out.println("EdgeList add: " + dbn.edgeList);

@@ -17,7 +17,7 @@ public class MainApp {
 		System.out.println("Working Directory = " + System.getProperty("user.dir"));
 		
 		//READ FILE
-		String fileName = "train-data-2.csv";
+		String fileName = "train-data.csv";
 		
 		try {
 			//String with the file
@@ -100,8 +100,8 @@ public class MainApp {
 					}
 						
 				}
-			for(int i = 0; i < numberOfNodes * 2; i++)
-				System.out.println(Arrays.toString(tableTTp1[i].toArray()));
+//			for(int i = 0; i < numberOfNodes * 2; i++)
+//				System.out.println(Arrays.toString(tableTTp1[i].toArray()));
 			
 			
 			DynamicBayesNetwork dbn = new DynamicBayesNetwork();
@@ -119,6 +119,11 @@ public class MainApp {
 			System.out.println(dbn.logLike());
 			System.out.println(dbn.mdl());
 			dbn.randomNet();
+			System.out.println("====== AFTER RAND ======");
+			System.out.println(dbn.logLike());
+			System.out.println(dbn.mdl());
+			
+			System.out.println(dbn.argMax());
 			
 			System.out.println(dbn.toString());
 			
