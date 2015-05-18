@@ -59,8 +59,8 @@ public class MainApp {
 				for(int i=0; i < timeSlices; i++){
 					for(int linha=1; linha < linesOfFile.length; linha++){
 						try{
-							System.out.println(n + " " + i + " " + linha);
-							if(Integer.parseInt(collumnsOfLine[linha][numberOfNodes * i + n])==dataTypes[n])
+//							System.out.println(n + " " + i + " " + linha + "-"+collumnsOfLine[linha][numberOfNodes * i + n]+"-");
+							if(Integer.parseInt(collumnsOfLine[linha][numberOfNodes * i + n].trim())==dataTypes[n])
 								dataTypes[n]++;
 						}
 						catch(ArrayIndexOutOfBoundsException e){
@@ -84,11 +84,11 @@ public class MainApp {
 				for(int i=1; i <= timeSlices; i++){
 					try{
 						for(int n=0; n < numberOfNodes; n++){
-							tableTTp1[numberOfNodes+n].add(Integer.parseInt(collumnsOfLine[linha][numberOfNodes * (i) + n]));
+							tableTTp1[numberOfNodes+n].add(Integer.parseInt(collumnsOfLine[linha][numberOfNodes * (i) + n].trim()));
 						}
 						for(int n=0; n < numberOfNodes; n++){
 							try{
-								tableTTp1[n].add(Integer.parseInt(collumnsOfLine[linha][numberOfNodes * (i-1) + n]));
+								tableTTp1[n].add(Integer.parseInt(collumnsOfLine[linha][numberOfNodes * (i-1) + n].trim()));
 							}
 							catch(IndexOutOfBoundsException e){
 								
@@ -116,53 +116,15 @@ public class MainApp {
 				dbn.addNode(node);
 				
 			}
-			
+			System.out.println(dbn.logLike());
+			System.out.println(dbn.mdl());
 			dbn.randomNet();
+			
+			System.out.println(dbn.toString());
 			
 			DynamicBayesNetwork dbn2 = new DynamicBayesNetwork(dbn.bestNetwork());
 			
-			System.out.println(dbn.toString());
 			System.out.println(dbn2.toString());
-			
-//			System.out.println(dbn.logLike());
-//			System.out.println(dbn.netComplexity());
-//			System.out.println(dbn.mdl());
-//			System.out.println(dbn.toString());
-//			System.out.println(dbn.isDag());
-//			
-//			
-//			System.out.println(dbn2.logLike());
-//			System.out.println(dbn2.netComplexity());
-//			System.out.println(dbn2.mdl());
-//			System.out.println(dbn2.toString());
-//			System.out.println(dbn2.isDag());
-//			
-//			DynamicBayesNetwork dbn3 = dbn2.argMax();
-//			System.out.println(dbn3.logLike());
-//			System.out.println(dbn3.netComplexity());
-//			System.out.println(dbn3.mdl());
-//			System.out.println(dbn3.toString());
-//			System.out.println(dbn3.isDag());
-//			
-//			DynamicBayesNetwork dbn4 = dbn3.argMax();
-//			System.out.println(dbn4.logLike());
-//			System.out.println(dbn4.netComplexity());
-//			System.out.println(dbn4.mdl());
-//			System.out.println(dbn4.toString());
-//			System.out.println(dbn4.isDag());
-			
-//			
-////			Logger.log(dbn.toString());
-//			
-////			Logger.log("LL " + dbn.logLike());
-////			Logger.log("B " + dbn.netComplexity());
-////			Logger.log("MDL " + dbn.mdl());
-////			
-////			
-////			Logger.log(dbn.argMax().toString());
-//			Logger.log(dbn2.toString());
-//			Logger.log("isDag?" + dbn2.isDag());
-
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

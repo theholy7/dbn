@@ -394,17 +394,16 @@ public class DynamicBayesNetwork {
 		
 		double result = 0;
 		double[] bestScore = new double[3];
-		Edge lastEdge = dbn.edgeList.getLast();
 		Edge[] changedEdge = new Edge[3];
 		boolean firstScore = true;
 		
 		
 		//Check scores of all add-moves
-		int p = 0;
+		
 		for(Node n: dbn.nodeList){
 			for(Node m: dbn.nodeList){
-				p++;
-				System.out.println(p);
+		
+		
 				if(dbn.addEdge(n, m)){ // adds new edge
 					if(dbn.isDag() != true){ // checks if net is a dag, if not, it is removed
 						dbn.edgeList.removeLast();
@@ -430,13 +429,13 @@ public class DynamicBayesNetwork {
 		
 //		System.out.println("EdgeList add: " + dbn.edgeList);
 		
-		
+		dbn = new DynamicBayesNetwork(this);
 		firstScore = true;
-		p=0;
+		Edge lastEdge = dbn.edgeList.getLast();
 		//Check scores of all flip-moves
 		for(int i=0; i< dbn.edgeList.size(); i++){
-			p++;
-			System.out.println(p);
+		
+		
 			Edge e = dbn.edgeList.get(0);
 			if(e != lastEdge){ 
 				dbn.flipEdge(e.parentNode, e.childNode); // flips edge
@@ -471,10 +470,11 @@ public class DynamicBayesNetwork {
 		
 		//Check scores of all remove-moves
 		firstScore = true;
-		p=0;
+		dbn = new DynamicBayesNetwork(this);
+		lastEdge = dbn.edgeList.getLast();
 		for(int i = 0; i<dbn.edgeList.size(); i++){
-			p++;
-			System.out.println(p);
+			
+			
 			Edge e = dbn.edgeList.getFirst();
 			
 			if(e==lastEdge){
@@ -526,7 +526,10 @@ public class DynamicBayesNetwork {
 		 
 		
 		System.out.println("Accao " + bestScoreIndex);
-		dbn.edgeList.add(changedEdge[bestScoreIndex]); 
+		if(bestScoreIndex<2)
+			dbn.edgeList.add(changedEdge[bestScoreIndex]);
+		else
+			dbn.edgeList.remove(changedEdge[bestScoreIndex]);
 		return dbn;
 	}
 	
@@ -545,7 +548,8 @@ public class DynamicBayesNetwork {
 			DynamicBayesNetwork dbnPrime2 = new DynamicBayesNetwork(dbnPrime.argMax());
 			//System.out.println("Meio " + dbnPrime2.edgeList);
 			//System.out.println("Meio " + dbnPrime2.mdl());
-			
+			System.out.println(dbnPrime2.logLike() + " " + dbnFinal.logLike());
+			System.out.println(dbnPrime2.mdl() + " " + dbnFinal.mdl());
 			if(dbnPrime2.mdl() > dbnFinal.mdl())
 				dbnFinal = new DynamicBayesNetwork(dbnPrime2);
 			else
