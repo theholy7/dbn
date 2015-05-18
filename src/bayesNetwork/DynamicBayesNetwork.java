@@ -1,10 +1,13 @@
 package bayesNetwork;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.TreeSet;
+
+import com.apple.laf.AquaButtonBorder.Dynamic;
 
 import bnApp.Logger;
 
@@ -43,6 +46,14 @@ public class DynamicBayesNetwork {
 				return false;
 		}
 		
+		//Check if from t+1 to t
+		if(this.nodeList.indexOf(parentNode)>getNumberOfNodes() && this.nodeList.indexOf(childNode)<getNumberOfNodes())
+			return false;
+		
+		//Check if from t to t
+		if(this.nodeList.indexOf(parentNode)<getNumberOfNodes() && this.nodeList.indexOf(childNode)<getNumberOfNodes())
+			return false;
+		
 		for(Edge e: this.edgeList){
 			// Check if Edge exists
 			if(e.parentNode.equals(parentNode) && e.childNode.equals(childNode)){
@@ -72,6 +83,10 @@ public class DynamicBayesNetwork {
 	}
 	
 	boolean flipEdge(Node parentNode, Node childNode){// Function to invert parent-child role
+		//Check if from t+1 to t
+		if(this.nodeList.indexOf(parentNode)<getNumberOfNodes() && this.nodeList.indexOf(childNode)>getNumberOfNodes())
+			return false;
+		
 		for(Edge e: this.edgeList)
 			if(e.parentNode.equals(parentNode) && e.childNode.equals(childNode)){
 				this.edgeList.remove(e);
@@ -143,10 +158,10 @@ public class DynamicBayesNetwork {
 	}
 	
 	//Net Complexity
-	public int netComplexity(){ // Function to calculate parameter B, network complexity
+	public double netComplexity(){ // Function to calculate parameter B, network complexity
 
-		int maxParentConfigs = 1;
-		int complexity = 0;
+		double maxParentConfigs = 1;
+		double complexity = 0;
 
 		for(Node n: nodeList){ //for each node
 			for(Edge e: edgeList){ //for each edge
@@ -162,7 +177,12 @@ public class DynamicBayesNetwork {
 	
 	//Net MDL
 	public double mdl(){ // Function that calculates MDL
-		return this.logLike() - 1/2 * Math.log(nodeList.size())*(double) this.netComplexity();
+//		System.out.println("LL " + this.logLike());
+//		System.out.println("NLS " + this.nodeList.size());
+//		System.out.println("LOG " + ((0.5)*Math.log(this.nodeList.size())/Math.log(2)));
+//		System.out.println("B " + this.netComplexity());
+		
+		return (this.logLike() - (0.5) * Math.log(this.nodeList.size())*this.netComplexity());
 	}
 	
 	
@@ -270,54 +290,57 @@ public class DynamicBayesNetwork {
 			randomChildNode = randomGenerator.nextInt(getNumberOfNodes()) + getNumberOfNodes();
 		}while(randomParentNode==randomChildNode);
 
-		//this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
+		this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
 		// end here!!
 		
 		// TEMPORARY!!!!!!!!!!
 		// AUHDAJFDSFLÇDASFJKLÇDASKAKDAJSFKLÇDJSAFKLÇADKS !!!!!!!
-		randomParentNode = 3;
-		randomChildNode = 4;
-
-		this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
-
-		randomParentNode = 4;
-		randomChildNode = 5;
-
-		this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
-
-
-		randomParentNode = 1;
-		randomChildNode = 5;
-
-		this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
-
+//		Logger.log("isDag?" + this.isDag());
+//		randomParentNode = 0;
+//		randomChildNode = 3;
+//
+//		this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
+//		Logger.log("isDag?" + this.isDag());
+//		randomParentNode = 4;
+//		randomChildNode = 5;
+//
+//		this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
+//		Logger.log("isDag?" + this.isDag());
+//
 //		randomParentNode = 5;
 //		randomChildNode = 3;
 //
 //		this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
+//		Logger.log("isDag?" + this.isDag());
+//		randomParentNode = 3;
+//		randomChildNode = 4;
+//
+//		this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
+//		Logger.log("isDag?" + this.isDag());
 	}
 	
 	
-	// isDag 
-	
+	// isDag 	
 	
 	public boolean isDag(){
 //		Check if network is DAG
-		boolean isDag = true;
+		boolean isDag = false;
 //		L ← Empty list that will contain the sorted nodes
 		LinkedList<Node> unmarkedNodes = new LinkedList<Node>(this.nodeList);
 		LinkedList<Node> tempMarkedNodes = new LinkedList<Node>();
 		
+		//System.out.println(Arrays.toString(unmarkedNodes.toArray()));
+		
 //		while there are unmarked nodes do
 		while(unmarkedNodes.isEmpty() == false){
 //		    select an unmarked node n
-			
+			//System.out.println(unmarkedNodes.getFirst().name);
 			Node selectedNode = unmarkedNodes.getFirst();
 			
 //		   Call function visit(n)			
 			isDag = visitNode(selectedNode, unmarkedNodes, tempMarkedNodes);
 			
-			if(isDag == false) break;
+			if(isDag == false) return isDag;
 			
 		}
 		
@@ -326,12 +349,12 @@ public class DynamicBayesNetwork {
 
 //	function visit(node n), that marks visited nodes
 	private boolean visitNode(Node node, LinkedList<Node> unmarked, LinkedList<Node> tempMarked){
-		boolean isDag = true;
 		
 //	    if n has a temporary mark then stop (not a DAG) ISTO NAO É REDUNDANTE TENDO EM CONTA QUE SO RECEBERÁS NÓS NAO MARCADOS?
 		if(tempMarked.contains(node) == true)
 			return false;
-		if(unmarked.contains(node)){
+		else{
+			boolean isDag = true;
 //		    if n is not marked (i.e. has not been visited yet) then
 //	        mark n temporarily
 			tempMarked.add(node);
@@ -353,12 +376,10 @@ public class DynamicBayesNetwork {
 			return isDag;
 			
 		}
-		return isDag;
 	}
 
 	
 	
-	// isDag
 
 	@Override
 	public String toString() {
@@ -370,22 +391,20 @@ public class DynamicBayesNetwork {
 	//Get net that maximizes the score
 	public DynamicBayesNetwork argMax(){
 		DynamicBayesNetwork dbn = new DynamicBayesNetwork(this);
+		
 		double result = 0;
 		double[] bestScore = new double[3];
 		Edge lastEdge = dbn.edgeList.getLast();
 		Edge[] changedEdge = new Edge[3];
 		boolean firstScore = true;
 		
-		//Simple greedy hill climb
-		//Generate a simple random starting network
-		//this.randomNet();
-		
-		
 		
 		//Check scores of all add-moves
+		int p = 0;
 		for(Node n: dbn.nodeList){
 			for(Node m: dbn.nodeList){
-				
+				p++;
+				System.out.println(p);
 				if(dbn.addEdge(n, m)){ // adds new edge
 					if(dbn.isDag() != true){ // checks if net is a dag, if not, it is removed
 						dbn.edgeList.removeLast();
@@ -413,8 +432,11 @@ public class DynamicBayesNetwork {
 		
 		
 		firstScore = true;
+		p=0;
 		//Check scores of all flip-moves
 		for(int i=0; i< dbn.edgeList.size(); i++){
+			p++;
+			System.out.println(p);
 			Edge e = dbn.edgeList.get(0);
 			if(e != lastEdge){ 
 				dbn.flipEdge(e.parentNode, e.childNode); // flips edge
@@ -449,8 +471,10 @@ public class DynamicBayesNetwork {
 		
 		//Check scores of all remove-moves
 		firstScore = true;
-		
+		p=0;
 		for(int i = 0; i<dbn.edgeList.size(); i++){
+			p++;
+			System.out.println(p);
 			Edge e = dbn.edgeList.getFirst();
 			
 			if(e==lastEdge){
@@ -501,9 +525,45 @@ public class DynamicBayesNetwork {
 		 
 		 
 		
-//		System.out.println(bestScoreIndex);
+		System.out.println("Accao " + bestScoreIndex);
 		dbn.edgeList.add(changedEdge[bestScoreIndex]); 
 		return dbn;
+	}
+	
+	public DynamicBayesNetwork bestNetwork(){
+		
+		DynamicBayesNetwork dbnFinal = new DynamicBayesNetwork(this);
+		DynamicBayesNetwork dbnPrime = new DynamicBayesNetwork(this);
+		
+		boolean increasingResult = true;
+		
+		//System.out.println(this.toString());
+		//System.out.println(this.mdl());
+		
+		int i=0;
+		while(increasingResult){
+			DynamicBayesNetwork dbnPrime2 = new DynamicBayesNetwork(dbnPrime.argMax());
+			//System.out.println("Meio " + dbnPrime2.edgeList);
+			//System.out.println("Meio " + dbnPrime2.mdl());
+			
+			if(dbnPrime2.mdl() > dbnFinal.mdl())
+				dbnFinal = new DynamicBayesNetwork(dbnPrime2);
+			else
+				increasingResult = false;
+			
+			
+			dbnPrime = new DynamicBayesNetwork(dbnPrime2);
+			System.out.println(dbnPrime.isDag());
+			i++;
+			System.out.println("ITER: " + i);
+		}
+		
+//		System.out.println(dbnFinal.edgeList);
+//		System.out.println(dbnFinal.mdl());
+		
+		
+		return dbnFinal;
+		
 	}
 
 }
