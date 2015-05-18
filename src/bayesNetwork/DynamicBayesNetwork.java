@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.TreeSet;
 
-import com.apple.laf.AquaButtonBorder.Dynamic;
 
 import bnApp.Logger;
 
@@ -17,7 +16,10 @@ public class DynamicBayesNetwork {
 	//DBN has nodes and Edges
 	LinkedList<Node> nodeList = new LinkedList<Node>();
 	LinkedList<Edge> edgeList = new LinkedList<Edge>();
-
+	
+	//The thetas of each var are a characteristic of the Network
+	public double[][] arrayOfThetas;
+	
 	public DynamicBayesNetwork(){
 	}
 	
@@ -300,15 +302,15 @@ public class DynamicBayesNetwork {
 		// TEMPORARY!!!!!!!!!!
 		// AUHDAJFDSFLÇDASFJKLÇDASKAKDAJSFKLÇDJSAFKLÇADKS !!!!!!!
 //		Logger.log("isDag?" + this.isDag());
-//		randomParentNode = 0;
-//		randomChildNode = 10;
-//
-//		this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
+		randomParentNode = 0;
+		randomChildNode = 7;
+
+		this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
 //		Logger.log("isDag?" + this.isDag());
-//		randomParentNode = 2;
-//		randomChildNode = 4;
-//
-//		this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
+		randomParentNode = 5;
+		randomChildNode = 7;
+
+		this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
 ////		Logger.log("isDag?" + this.isDag());
 ////
 //		randomParentNode = 3;
@@ -588,6 +590,56 @@ public class DynamicBayesNetwork {
 		
 		
 		return dbnFinal;
+		
+	}
+
+	public void calculateTijk() {
+		double nprime = 0.5;
+		// TODO Auto-generated method stub
+		int numberOfNodes = this.getNumberOfNodes();
+		this.arrayOfThetas = new double[numberOfNodes][];
+		
+		ArrayList<Node>[] parents = new ArrayList[numberOfNodes];
+		double[] sizeOfTheta = new double[numberOfNodes];
+		
+		for(int i = 0; i<numberOfNodes; i++)
+			parents[i] = new ArrayList<Node>();
+
+		
+		for(int i=numberOfNodes; i<numberOfNodes*2;i++){ //Each node
+			for(Edge e: this.edgeList){
+				if(e.childNode == this.nodeList.get(i)){
+					parents[i-numberOfNodes].add(e.parentNode); //get parents
+				}
+			}
+			int auxConfigs = this.nodeList.get(i).dataType;
+			int maxParentConfigs = 1;
+			for(Node parent: parents[i-numberOfNodes]){
+				auxConfigs *= parent.dataType; //maxparentconfigs * datatype of node
+				maxParentConfigs *= parent.dataType;
+			}
+			
+			this.arrayOfThetas[i-numberOfNodes] = new double[auxConfigs]; //build theta array for node
+			
+			//calc Nij and calc Nijk
+			for(int parentConfig=0; parentConfig < maxParentConfigs; parentConfig++){//cycle to run all parent configurations
+				int Nij = 0;
+				for(int k = 0; k < this.nodeList.get(i).dataType; k++){//cycle to run all the node's variables
+					Nij += calculateNijk(this.nodeList.get(i), parentConfig, k);
+				}
+
+				
+
+				for(int k = 0; k < this.nodeList.get(i).dataType; k++){ // erhmmmm... what ? lol !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!???
+					int auxNijk = calculateNijk(this.nodeList.get(i), parentConfig, k);
+
+					System.out.println(auxNijk  + " + " + nprime + " / " + Nij + " + " + this.nodeList.get(i).dataType + " * " + nprime);
+					this.arrayOfThetas[i-numberOfNodes][parentConfig*this.nodeList.get(i).dataType + k]=((double) (auxNijk + nprime))/ ((double) Nij+this.nodeList.get(i).dataType*nprime);
+					
+				}
+
+			}
+		}
 		
 	}
 

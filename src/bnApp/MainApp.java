@@ -17,7 +17,7 @@ public class MainApp {
 		System.out.println("Working Directory = " + System.getProperty("user.dir"));
 		
 		//READ FILE
-		String fileName = "train-data-2.csv";
+		String fileName = "train-data-simple.csv";
 		
 		try {
 			//String with the file
@@ -130,6 +130,10 @@ public class MainApp {
 			DynamicBayesNetwork dbn2 = new DynamicBayesNetwork(dbn.bestNetwork());
 			
 			System.out.println(dbn2.toString());
+			
+			dbn2.calculateTijk();
+			
+			System.out.println(Arrays.toString(dbn2.arrayOfThetas[1]));
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
