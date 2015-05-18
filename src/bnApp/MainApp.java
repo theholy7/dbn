@@ -17,7 +17,7 @@ public class MainApp {
 		System.out.println("Working Directory = " + System.getProperty("user.dir"));
 		
 		//READ FILE
-		String fileName = "train-data.csv";
+		String fileName = "train-data-2.csv";
 		
 		try {
 			//String with the file
@@ -123,7 +123,7 @@ public class MainApp {
 			System.out.println(dbn.logLike());
 			System.out.println(dbn.mdl());
 			
-			System.out.println(dbn.argMax());
+			//System.out.println(dbn.argMax());
 			
 			System.out.println(dbn.toString());
 			
