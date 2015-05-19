@@ -8,9 +8,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.TreeSet;
 
-import javax.print.attribute.standard.NumberOfDocuments;
-
-import bnApp.Logger;
 
 public class DynamicBayesNetwork {
 
@@ -126,13 +123,13 @@ public class DynamicBayesNetwork {
 
 		double loglike = 0;
 		
-		Logger.log("Calculating logLike");
+		
 		
 		for(Node node : nodeList) {
 			
 			int maxParentConfigs = 1;
 
-			Logger.log("Node: " + node);
+			
 			
 			// Calculate number of parent configurations
 			for(Edge edge : edgeList){ //for each edge
@@ -141,18 +138,18 @@ public class DynamicBayesNetwork {
 				}
 			}
 	
-			Logger.log("-- maxParentConfigs: " + maxParentConfigs);
+			
 
 			
 			for(int parentConfig=0; parentConfig < maxParentConfigs; parentConfig++){//cycle to run all parent configurations
 				int Nij = 0;
 				for(int k = 0; k < node.dataType; k++){//cycle to run all the node's variables
-					Logger.log("-- calculateNijk: " + "node:" + node + " / parentConfig: " +  parentConfig + "/ k" + k);
-					Logger.log("-- calculateNijk: " + calculateNijk(node, parentConfig, k));
+					
+					
 					Nij += calculateNijk(node, parentConfig, k);
 				}
 
-				Logger.log("-- calculateNij: " + Nij);
+				
 				
 				for(int k = 0; k < node.dataType; k++){ // erhmmmm... what ? lol !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!???
 					int auxNijk = calculateNijk(node, parentConfig, k);
@@ -169,7 +166,7 @@ public class DynamicBayesNetwork {
 			}
 		}
 
-		Logger.log("LL= " + loglike);
+		
 		
 		return loglike;
 	}
@@ -601,7 +598,7 @@ public class DynamicBayesNetwork {
 		//System.out.println(this.toString());
 		//System.out.println(this.mdl());
 		
-		int i=0;
+		
 		while(increasingResult){
 			DynamicBayesNetwork dbnPrime2 = new DynamicBayesNetwork(dbnPrime.argMax());
 			//System.out.println("Meio " + dbnPrime2.edgeList);
@@ -623,9 +620,7 @@ public class DynamicBayesNetwork {
 			
 			
 			dbnPrime = new DynamicBayesNetwork(dbnPrime2);
-//			System.out.println(dbnPrime.isDag());
-//			i++;
-//			System.out.println("ITER: " + i);
+
 		}
 		
 //		System.out.println(dbnFinal.edgeList);
@@ -638,12 +633,12 @@ public class DynamicBayesNetwork {
 
 	public void calculateTijk() {
 		double nprime = 0.5;
-		// TODO Auto-generated method stub
+		
 		int numberOfNodes = this.getNumberOfNodes();
 		this.arrayOfThetas = new double[numberOfNodes][];
 		
 		ArrayList<Node>[] parents = new ArrayList[numberOfNodes];
-		double[] sizeOfTheta = new double[numberOfNodes];
+		//double[] sizeOfTheta = new double[numberOfNodes];
 		
 		for(int i = 0; i<numberOfNodes; i++)
 			parents[i] = new ArrayList<Node>();
@@ -673,7 +668,7 @@ public class DynamicBayesNetwork {
 
 				
 
-				for(int k = 0; k < this.nodeList.get(i).dataType; k++){ // erhmmmm... what ? lol !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!???
+				for(int k = 0; k < this.nodeList.get(i).dataType; k++){ 
 					int auxNijk = calculateNijk(this.nodeList.get(i), parentConfig, k);
 
 					//System.out.println(auxNijk  + " + " + nprime + " / " + Nij + " + " + this.nodeList.get(i).dataType + " * " + nprime);

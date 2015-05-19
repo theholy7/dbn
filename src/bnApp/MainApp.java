@@ -165,10 +165,6 @@ public class MainApp {
 			
 			dbn2.calculateTijk();
 			
-			System.out.println(Arrays.toString(dbn2.arrayOfThetas[0]));
-			System.out.println(Arrays.toString(dbn2.arrayOfThetas[1]));
-			System.out.println(Arrays.toString(dbn2.arrayOfThetas[2]));
-			System.out.println(Arrays.toString(dbn2.arrayOfThetas[3]));
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
