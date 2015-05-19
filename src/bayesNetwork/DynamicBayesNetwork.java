@@ -118,7 +118,12 @@ public class DynamicBayesNetwork {
 		return true;
 	}
 	
-	// FALTA ESTAAAAAAAAAAAAAAAAAAAAAAAESTAAAAAAAAAAAAAAAAAAAAAAAESTAAAAAAAAAAAAAAAAAAAAAAAESTAAAAAAAAAAAAAAAAAAAAAAAESTAAAAAAAAAAAAAAAAAAAAAAAESTAAAAAAAAAAAAAAAAAAAAAAAESTAAAAAAAAAAAAAAAAAAAAAAA
+	
+	/**
+	 * Receives a string (MDL or LL) and sets a flag to use the correct function.
+	 * 
+	 * @param s
+	 */
 	public void setScore(String s){
 		if(s.toLowerCase().equals("ll"))
 			this.scoreFunction = 1;
