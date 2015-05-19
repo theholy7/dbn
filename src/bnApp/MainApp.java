@@ -175,6 +175,12 @@ public class MainApp {
 		
 	}
 	
+	/**
+	 * Function that verifies the validity of the input parameters.
+	 * 
+	 * @param args
+	 * @return
+	 */
 	public static boolean inputParam(String[] args){
 
 
@@ -204,6 +210,12 @@ public class MainApp {
 		return true;
 	}
 	
+	/**
+	 * Function to check if an input parameter is a number
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public static boolean isInteger(String s) {
 	    try { 
 	        Integer.parseInt(s); 
@@ -217,6 +229,13 @@ public class MainApp {
 	}
 	
 	//Function to read the file to a single string
+	/**
+	 * Function that reads the input file and builds the string with the whole file
+	 * 
+	 * @param fileName
+	 * @return
+	 * @throws IOException
+	 */
 	static String readFile(String fileName) throws IOException {
 	    BufferedReader br = new BufferedReader(new FileReader(fileName));
 	    try {

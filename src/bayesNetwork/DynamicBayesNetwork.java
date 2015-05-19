@@ -8,7 +8,15 @@ import java.util.List;
 import java.util.Random;
 import java.util.TreeSet;
 
-
+/**
+ * @author Jose Miguel Filipe Antunes  ist167929
+ * @author Pedro Miguel Nobre ist167693
+ *
+ */
+/**
+ * @author jose
+ *
+ */
 public class DynamicBayesNetwork {
 
 	//DBN has nodes and Edges
@@ -19,9 +27,20 @@ public class DynamicBayesNetwork {
 	public double[][] arrayOfThetas;
 	int scoreFunction;
 	
+	/** 
+	 * No-arg Constructor
+	 * 
+	 */
 	public DynamicBayesNetwork(){
 	}
 	
+	/**
+	 * Creates a copy of the original network
+	 * 
+	 * This copy is created so that the original Edges, edgeList are not changed
+	 * 
+	 * @param dbn object to be copied
+	 */
 	public DynamicBayesNetwork(DynamicBayesNetwork dbn){ //copy constructor
 		this.scoreFunction = dbn.scoreFunction;
 		this.nodeList = dbn.nodeList;
@@ -29,13 +48,37 @@ public class DynamicBayesNetwork {
 			this.edgeList.add(e.clone());
 	}
 	
+	/**
+	 * Method that adds a Node to the nodeList
+	 * @param n node to be added to the nodeList
+	 */
 	public void addNode(Node n){
 		this.nodeList.add(n);
 		
 	}
 	
+	/**
+	 * Function that, when called, returns the size of the nodeList divided in half
+	 * 
+	 * @return int corresponding value to the number of nodes in the nodeList
+	 */
 	int getNumberOfNodes(){ return this.nodeList.size()/2;}
 	
+	/**
+	 * Generates edges for the copied edgeList
+	 * 
+	 * Fuction that adds an Edge to the edgeList only if:
+	 * <p>
+	 * There is no Edge equal to the Edge intended to create (or inverted)
+	 * <p>
+	 * The childNode doesn't have more than 3 parents
+	 * <p>
+	 * There is no inter-temporal relations to the past
+	 * 
+	 * @param parentNode node to be connected as parent
+	 * @param childNode	node to be connected as child
+	 * @return boolean returns true if edge is created, or false if it doesn't meet the criteria 
+	 */
 	boolean addEdge(Node parentNode, Node childNode){ // Function that connects father and son Nodes
 		int parentCounter = 0;
 		
@@ -75,6 +118,7 @@ public class DynamicBayesNetwork {
 		return true;
 	}
 	
+	// FALTA ESTAAAAAAAAAAAAAAAAAAAAAAAESTAAAAAAAAAAAAAAAAAAAAAAAESTAAAAAAAAAAAAAAAAAAAAAAAESTAAAAAAAAAAAAAAAAAAAAAAAESTAAAAAAAAAAAAAAAAAAAAAAAESTAAAAAAAAAAAAAAAAAAAAAAAESTAAAAAAAAAAAAAAAAAAAAAAA
 	public void setScore(String s){
 		if(s.toLowerCase().equals("ll"))
 			this.scoreFunction = 1;
@@ -84,6 +128,13 @@ public class DynamicBayesNetwork {
 		
 	}
 	
+	/**
+	 * Method to remove edges from the edgeList
+	 * 
+	 * @param parentNode node with father role to be removed from the relation with the childNode
+	 * @param childNode node with child role to be removed from the relation with the fatherNode
+	 * @return true if edge removed, otherwise return false
+	 */
 	boolean removeEdge(Node parentNode, Node childNode){// Function that removes connections
 		for(Edge e: this.edgeList)
 			if(e.parentNode.equals(parentNode) && e.childNode.equals(childNode)){
@@ -93,6 +144,19 @@ public class DynamicBayesNetwork {
 		return false;
 	}
 	
+	/**
+	 * Method that flips an existing edge
+	 * 
+	 * This method shall flip an edge, inverting the parent-child role if:
+	 * <p>
+	 * The edge exists
+	 * <p>
+	 * The parentNode is not posterior to the childNode
+	 * 
+	 * @param parentNode
+	 * @param childNode
+	 * @return true if edge is flipped, otherwise returns false
+	 */
 	boolean flipEdge(Node parentNode, Node childNode){// Function to invert parent-child role
 		
 		//Check if from t+1 to t
@@ -112,13 +176,12 @@ public class DynamicBayesNetwork {
 		return false;
 	}
 	
-	
-	
-	/**
-	 * LL Score 
-	 */
-
 	 // Function to calculate log-likelihood
+	/**
+	 * Arithmetic function that calculates the log-likelihood
+	 * 
+	 * @return calculated score
+	 */
 	public double logLike(){
 
 		double loglike = 0;
@@ -172,6 +235,11 @@ public class DynamicBayesNetwork {
 	}
 	
 	//Net Complexity
+	/**
+	 * Arithmetic function to calculate the net complexity
+	 * 
+	 * @return double with the net complexity
+	 */
 	public double netComplexity(){ // Function to calculate parameter B, network complexity
 
 		double complexity = 0;
@@ -190,6 +258,11 @@ public class DynamicBayesNetwork {
 	}
 	
 	//Net MDL
+	/**
+	 * Arithmetic function that calculates the minimum description length
+	 * 
+	 * @return double with the mdl score
+	 */
 	public double mdl(){ // Function that calculates MDL
 //		System.out.println("LL " + this.logLike());
 //		System.out.println("NLS " + this.nodeList.size());
@@ -201,6 +274,14 @@ public class DynamicBayesNetwork {
 	
 	
 	//Given j-config returns array of j_i value of each parent
+	/**
+	 * Given j parent config, returns an array of each parent
+	 * 
+	 * 
+	 * @param parentConfig father configuration to be used
+	 * @param parents ArrayList of parents
+	 * @return Integer[] 
+	 */
 	public Integer[] parentValues(int parentConfig, ArrayList<Node> parents){
 		
 		List<Integer> parentValues = new ArrayList<Integer>();
@@ -223,6 +304,17 @@ public class DynamicBayesNetwork {
 		return finalArray;
 	}
 
+	/**
+	 * Function that calculates Nijk for a given node, parentConfig and value
+	 * 
+	 * This function runs all the parent's values, to find the wanted values. Then, it saves a TreeSet with the respective indexes of those values, and uses the retain function with the other parents Tree.
+	 * It proceeds to calculate the number of values wanted in the childNode that correspond to the indexes contained in the father's TreeSet  
+	 * 
+	 * @param node node to which is intended to calculte Nijk
+	 * @param parentConfig father configuration to be used
+	 * @param valueK value of the wanted feature
+	 * @return int with the node's Nijk
+	 */
 	public int calculateNijk(Node node, int parentConfig, int valueK){// Function to calculate Nijk
 		//Node - i
 		//Parent Config - j
@@ -289,7 +381,12 @@ public class DynamicBayesNetwork {
 		return countNijk;
 	}
 
-	
+	/**
+	 * Method that generates a random initial network
+	 * 
+	 * Random events are created with the Random class, to retrieve a node number to operate on
+	 * 
+	 */
 	public void randomNet(){
 		//Begin random object
 		Random randomGenerator = new Random(); 
@@ -310,7 +407,15 @@ public class DynamicBayesNetwork {
 	
 	
 	// isDag 	
-	
+	/**
+	 * Method with an algorithm that tests if a network is acyclic
+	 * 
+	 * Creats two LinkedLists, one with all visited nodes, and one with unvisited nodes, being the latter a copy of the original nodeList. The function visitNode complements this method
+	 * 
+	 *
+	 * 
+	 * @return boolean true if dag, false otherwise
+	 */
 	public boolean isDag(){
 //		Check if network is DAG
 		boolean isDag = false;
@@ -336,7 +441,16 @@ public class DynamicBayesNetwork {
 		return isDag;	
 	}
 
-//	function visit(node n), that marks visited nodes
+//	function visit(node n), that marks visited nodes 
+	/**
+	 * Function that recursively visits nodes and checks if they have been previously visited.
+	 * 
+	 * 
+	 * @param node
+	 * @param unmarked
+	 * @param tempMarked
+	 * @return
+	 */
 	private boolean visitNode(Node node, LinkedList<Node> unmarked, LinkedList<Node> tempMarked){
 		
 //	    if n has a temporary mark then stop (not a DAG) ISTO NAO É REDUNDANTE TENDO EM CONTA QUE SO RECEBERÁS NÓS NAO MARCADOS?
@@ -368,6 +482,9 @@ public class DynamicBayesNetwork {
 	}
 
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		StringBuilder output = new StringBuilder();
@@ -409,6 +526,15 @@ public class DynamicBayesNetwork {
 	
 	
 	//Get net that maximizes the score
+	/**
+	 * Function that manipulates the network, using the add, flip and remove steps.
+	 * 
+	 * This function tries each step and compares the obtained score to the previous steps( of the same kind. i.e. if a better add is found, it is saved over the last add). If better, the step is saved and built in to the new DynamicBayesNetwork
+	 * 
+	 * 																																																															ZÉÉÉÉÉÉÉ´ILUMINA-ME NOS IFS FINAIS
+	 * 
+	 * @return DynamicBayesNetwork Network with best score
+	 */
 	public DynamicBayesNetwork argMax(){
 		DynamicBayesNetwork dbn = new DynamicBayesNetwork(this);
 		
@@ -588,6 +714,11 @@ public class DynamicBayesNetwork {
 		return dbn;
 	}
 	
+	/**
+	 * Function that builds returns the best DynamicBayesNetwork 
+	 * 
+	 * @return	DynamicBayesNetwork the best score network
+	 */
 	public DynamicBayesNetwork bestNetwork(){
 		
 		DynamicBayesNetwork dbnFinal = new DynamicBayesNetwork(this);
@@ -631,6 +762,11 @@ public class DynamicBayesNetwork {
 		
 	}
 
+
+	/**
+	 * Function that returns the parameters theta for all values a node can have given its parent configuration
+	 * 
+	 */
 	public void calculateTijk() {
 		double nprime = 0.5;
 		
