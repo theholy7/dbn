@@ -13,10 +13,6 @@ import java.util.TreeSet;
  * @author Pedro Miguel Nobre ist167693
  *
  */
-/**
- * @author jose
- *
- */
 public class DynamicBayesNetwork {
 
 	//DBN has nodes and Edges
@@ -122,7 +118,7 @@ public class DynamicBayesNetwork {
 	/**
 	 * Receives a string (MDL or LL) and sets a flag to use the correct function.
 	 * 
-	 * @param s
+	 * @param s String that defines the Score to be used (MDL or LL)
 	 */
 	public void setScore(String s){
 		if(s.toLowerCase().equals("ll"))
@@ -536,7 +532,7 @@ public class DynamicBayesNetwork {
 	 * 
 	 * This function tries each step and compares the obtained score to the previous steps( of the same kind. i.e. if a better add is found, it is saved over the last add). If better, the step is saved and built in to the new DynamicBayesNetwork
 	 * 
-	 * 																																																															ZÉÉÉÉÉÉÉ´ILUMINA-ME NOS IFS FINAIS
+	 * 																																																	
 	 * 
 	 * @return DynamicBayesNetwork Network with best score
 	 */

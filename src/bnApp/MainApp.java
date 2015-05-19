@@ -8,6 +8,11 @@ import java.io.File;
 
 import bayesNetwork.*;
 
+/**
+ * @author Jose Miguel Filipe Antunes  ist167929
+ * @author Pedro Miguel Nobre ist167693
+ *
+ */
 public class MainApp {
 	
 	public static void main(String[] args) {
@@ -176,8 +181,8 @@ public class MainApp {
 	/**
 	 * Function that verifies the validity of the input parameters.
 	 * 
-	 * @param args
-	 * @return
+	 * @param args These are the arguments the user passes to the program
+	 * @return Returns true if all params are valid
 	 */
 	public static boolean inputParam(String[] args){
 
@@ -211,8 +216,8 @@ public class MainApp {
 	/**
 	 * Function to check if an input parameter is a number
 	 * 
-	 * @param s
-	 * @return
+	 * @param s String that needs to be parsed to int
+	 * @return returns true if string is a valid number
 	 */
 	public static boolean isInteger(String s) {
 	    try { 
