@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.TreeSet;
 
+import javax.print.attribute.standard.NumberOfDocuments;
 
 import bnApp.Logger;
 
@@ -160,7 +161,7 @@ public class DynamicBayesNetwork {
 	
 					if(auxNijk != 0 && Nij !=0){ // arithmetics
 						double auxDiv = (double) auxNijk / (double) Nij;
-						loglike += (double) auxNijk * (Math.log(auxDiv) / Math.log(2));
+						loglike += (double) auxNijk * (Math.log(auxDiv) / (double)Math.log(2));
 					}
 					else loglike += 0;
 				}
@@ -176,10 +177,10 @@ public class DynamicBayesNetwork {
 	//Net Complexity
 	public double netComplexity(){ // Function to calculate parameter B, network complexity
 
-		double maxParentConfigs = 1;
 		double complexity = 0;
 
 		for(Node n: nodeList){ //for each node
+			double maxParentConfigs = 1;
 			for(Edge e: edgeList){ //for each edge
 				if(e.childNode == n){ //if node is a child in that edge
 					maxParentConfigs *= e.parentNode.dataType; //get parent dataType and multiply = q_i
@@ -198,7 +199,7 @@ public class DynamicBayesNetwork {
 //		System.out.println("LOG " + ((0.5)*Math.log(this.nodeList.size())/Math.log(2)));
 //		System.out.println("B " + this.netComplexity());
 		
-		return (this.logLike() - (0.5) * Math.log(this.nodeList.size())*this.netComplexity());
+		return (this.logLike() - (0.5) * (Math.log(this.nodeList.getFirst().data.length)/((double) Math.log(2)))*this.netComplexity());
 	}
 	
 	
@@ -307,32 +308,7 @@ public class DynamicBayesNetwork {
 		}while(randomParentNode==randomChildNode);
 
 		this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
-		// end here!!
 		
-		// TEMPORARY!!!!!!!!!!
-		// AUHDAJFDSFLÇDASFJKLÇDASKAKDAJSFKLÇDJSAFKLÇADKS !!!!!!!
-//		Logger.log("isDag?" + this.isDag());
-		randomParentNode = 0;
-		randomChildNode = 3;
-
-		this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
-//		Logger.log("isDag?" + this.isDag());
-		randomParentNode = 1;
-		randomChildNode = 3;
-
-		this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
-////		Logger.log("isDag?" + this.isDag());
-////
-//		randomParentNode = 3;
-//		randomChildNode = 4;
-//
-//		this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
-////		Logger.log("isDag?" + this.isDag());
-//		randomParentNode = 4;
-//		randomChildNode = 5;
-//
-//		this.addEdge(this.nodeList.get(randomParentNode), this.nodeList.get(randomChildNode));
-//		Logger.log("isDag?" + this.isDag());
 	}
 	
 	
@@ -394,13 +370,44 @@ public class DynamicBayesNetwork {
 		}
 	}
 
-	
-	
 
 	@Override
 	public String toString() {
-		return "DynamicBayesNetwork [nodeList=" + nodeList + ", edgeList="
-				+ edgeList + "]";
+		StringBuilder output = new StringBuilder();
+		
+		output.append("=== inter-slice connectivity \n");
+		for(int index=getNumberOfNodes(); index<getNumberOfNodes()*2; index++){
+			output.append(this.nodeList.get(index).name);
+			output.append("_at_time-slice_t+1 : ");
+			for(Edge e: this.edgeList){
+				if(e.childNode == this.nodeList.get(index) && this.nodeList.indexOf(e.parentNode)<getNumberOfNodes()){
+					output.append(this.nodeList.get(this.nodeList.indexOf(e.parentNode)).name+"_at_time-slice_t,");
+				}
+			}
+			
+			
+			output.append("\n");
+		}
+		
+		output.append("=== intra-slice connectivity \n");
+		for(int index=getNumberOfNodes(); index<getNumberOfNodes()*2; index++){
+			output.append(this.nodeList.get(index).name);
+			output.append("_at_time-slice_t+1 : ");
+			for(Edge e: this.edgeList){
+				if(e.childNode == this.nodeList.get(index) && this.nodeList.indexOf(e.parentNode)>=getNumberOfNodes()){
+					output.append(this.nodeList.get(this.nodeList.indexOf(e.parentNode)).name+"_at_time-slice_t+1,");
+				}
+			}
+			
+			
+			output.append("\n");
+		}
+		
+		output.append("=== Scores\n");
+		output.append("LL score : " + this.logLike() + "\n");
+		output.append("MDL score : " + this.mdl() + "\n");
+		
+		return output.toString();
 	}
 	
 	
@@ -509,7 +516,7 @@ public class DynamicBayesNetwork {
 		dbn = new DynamicBayesNetwork(this);
 		lastEdge = dbn.edgeList.getLast();
 		
-		System.out.println(dbn.edgeList);
+		//System.out.println(dbn.edgeList);
 		for(int i = 0; i<dbn.edgeList.size(); i++){
 			
 			Edge e = dbn.edgeList.getFirst();
@@ -545,15 +552,15 @@ public class DynamicBayesNetwork {
 	
 				dbn.edgeList.addLast(e);
 			}
-			System.out.println(dbn.edgeList);
+			//System.out.println(dbn.edgeList);
 		}
-		System.out.println(dbn.edgeList);
+		//System.out.println(dbn.edgeList);
 		
 //		System.out.println("EdgeList remove: " + bn.edgeList);
 //		
-		System.out.println("BS-add " + bestScore[0]);
-		System.out.println("BS-flip " + bestScore[1]);
-		System.out.println("BS-remove " + bestScore[2]);
+//		System.out.println("BS-add " + bestScore[0]);
+//		System.out.println("BS-flip " + bestScore[1]);
+//		System.out.println("BS-remove " + bestScore[2]);
 		
 		
 		int bestScoreIndex = 0;
@@ -573,21 +580,14 @@ public class DynamicBayesNetwork {
 		 
 		 
 		
-		System.out.println("Accao " + bestScoreIndex);
+		//System.out.println("Accao " + bestScoreIndex);
 		if(bestScoreIndex==0)
 			dbn.edgeList.add(changedEdge[bestScoreIndex]);
 		if(bestScoreIndex==1)
 			dbn.flipEdge(changedEdge[bestScoreIndex].parentNode, changedEdge[bestScoreIndex].childNode);
 		if(bestScoreIndex==2)
 			dbn.edgeList.remove(changedEdge[bestScoreIndex]);
-		
 
-		try {
-			System.in.read();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 		return dbn;
 	}
 	
@@ -606,8 +606,8 @@ public class DynamicBayesNetwork {
 			DynamicBayesNetwork dbnPrime2 = new DynamicBayesNetwork(dbnPrime.argMax());
 			//System.out.println("Meio " + dbnPrime2.edgeList);
 			//System.out.println("Meio " + dbnPrime2.mdl());
-			System.out.println(dbnPrime2.logLike() + " " + dbnFinal.logLike());
-			System.out.println(dbnPrime2.mdl() + " " + dbnFinal.mdl());
+			//System.out.println(dbnPrime2.logLike() + " " + dbnFinal.logLike());
+			//System.out.println(dbnPrime2.mdl() + " " + dbnFinal.mdl());
 			if(scoreFunction == 1){
 				if(dbnPrime2.logLike() > dbnFinal.logLike())
 					dbnFinal = new DynamicBayesNetwork(dbnPrime2);
@@ -623,9 +623,9 @@ public class DynamicBayesNetwork {
 			
 			
 			dbnPrime = new DynamicBayesNetwork(dbnPrime2);
-			System.out.println(dbnPrime.isDag());
-			i++;
-			System.out.println("ITER: " + i);
+//			System.out.println(dbnPrime.isDag());
+//			i++;
+//			System.out.println("ITER: " + i);
 		}
 		
 //		System.out.println(dbnFinal.edgeList);
@@ -676,7 +676,7 @@ public class DynamicBayesNetwork {
 				for(int k = 0; k < this.nodeList.get(i).dataType; k++){ // erhmmmm... what ? lol !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!???
 					int auxNijk = calculateNijk(this.nodeList.get(i), parentConfig, k);
 
-					System.out.println(auxNijk  + " + " + nprime + " / " + Nij + " + " + this.nodeList.get(i).dataType + " * " + nprime);
+					//System.out.println(auxNijk  + " + " + nprime + " / " + Nij + " + " + this.nodeList.get(i).dataType + " * " + nprime);
 					this.arrayOfThetas[i-numberOfNodes][parentConfig*this.nodeList.get(i).dataType + k]=((double) (auxNijk + nprime))/ ((double) Nij+this.nodeList.get(i).dataType*nprime);
 					
 				}

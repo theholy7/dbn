@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.io.File;
 
 import bayesNetwork.*;
 
@@ -14,10 +15,33 @@ public class MainApp {
 	public static void main(String[] args) {
 		
 		//Check working directory
-		System.out.println("Working Directory = " + System.getProperty("user.dir"));
+		//System.out.println("Working Directory = " + System.getProperty("user.dir"));
+		
+		File f=new File(args[0]);
+		File f2=new File(args[1]);
+		
+		boolean inputTest=inputParam(args);
+		if(inputTest!=true){
+			System.out.println("Invalid input parameters");
+			System.exit(1);
+		}
+			
+		if(!f.exists()){
+			System.out.println("404: file not found");
+			System.exit(1);
+		}
+		if(!f2.exists()){
+			System.out.println("404: file2 not found");
+			System.exit(1);
+		}
+		
+		if(args.length == 4)
+			System.out.println("Parameters: " + args[0] + " " + args[1] + " " + args[2] + " " + args[3]);
+		if(args.length == 5)
+			System.out.println("Parameters: " + args[0] + " " + args[1] + " " + args[2] + " " + args[3] + " " + args[4]);
 		
 		//READ FILE
-		String fileName = "train-data-2.csv";
+		String fileName = args[0];
 		
 		try {
 			//String with the file
@@ -44,12 +68,12 @@ public class MainApp {
 					break;
 				}
 			}
-			System.out.println("Number of Nodes: " + numberOfNodes);
+			//System.out.println("Number of Nodes: " + numberOfNodes);
 			
 			//Calculate number of time slices
 			int numOfCollums = collumnsOfLine[0].length;
 			int timeSlices = Integer.parseInt(collumnsOfLine[0][numOfCollums-1].split("_")[1]);
-			System.out.println("Time slices: " + timeSlices);
+			//System.out.println("Time slices: " + timeSlices);
 			
 			//Calculate r_i of each node
 			int[] dataTypes = new int[numberOfNodes];
@@ -71,7 +95,7 @@ public class MainApp {
 				}
 			}
 			
-			System.out.println("Data types: " + Arrays.toString(dataTypes));
+			//System.out.println("Data types: " + Arrays.toString(dataTypes));
 			
 			//Create t and t+1 table
 			ArrayList<Integer>[] tableTTp1 = new ArrayList[2*numberOfNodes];
@@ -105,7 +129,7 @@ public class MainApp {
 			
 			
 			DynamicBayesNetwork dbn = new DynamicBayesNetwork();
-			dbn.setScore("MDL");
+			dbn.setScore(args[2]);
 			
 			for(int k = 0; k < 2; k++)
 				for(int i = 0; i < numberOfNodes; i++){
@@ -117,18 +141,25 @@ public class MainApp {
 				dbn.addNode(node);
 				
 			}
-			System.out.println(dbn.logLike());
-			System.out.println(dbn.mdl());
-			dbn.randomNet();
-			System.out.println("====== AFTER RAND ======");
-			System.out.println(dbn.logLike());
-			System.out.println(dbn.mdl());
 			
+			dbn.randomNet();
+//			System.out.println("====== AFTER RAND ======");
+//			System.out.println(dbn.logLike());
+//			System.out.println(dbn.netComplexity());
+//			System.out.println(dbn.mdl());
+//			
 			//System.out.println(dbn.argMax());
 			
-			System.out.println(dbn.toString());
+			//System.out.println(dbn.toString());
+			
+			long startTime = System.nanoTime();
 			
 			DynamicBayesNetwork dbn2 = new DynamicBayesNetwork(dbn.bestNetwork());
+			
+			long endTime = System.nanoTime();
+			double durationTime = (endTime-startTime)/1000000000.0; //Time in seconds
+			System.out.println("Building DBN: " + durationTime + " time");
+			System.out.println("Transition network:");
 			
 			System.out.println(dbn2.toString());
 			
@@ -146,6 +177,47 @@ public class MainApp {
 		
 		
 		
+	}
+	
+	public static boolean inputParam(String[] args){
+
+
+		String extension="";
+		String extension2="";
+
+		if(args.length < 4 || args.length >5)return false; // VER QUANTIDADE DE ARGUMENTOS DE ENTRADA
+		
+		if(!args[2].equals("MDL") && !args[2].equals("LL"))return false; // check validity of parameter score
+
+		int i = args[0].lastIndexOf('.');
+		int j = args[1].lastIndexOf('.');
+		if(i>0 && j>0){
+			extension=args[0].substring(i+1);
+			extension2=args[1].substring(j+1);
+		}
+		if(!extension.equals("csv") || !extension2.equals("csv"))return false; // checks file extensions
+		
+
+		
+		
+		
+		for(int k=3; k<args.length; k++)
+			if(!isInteger(args[k]))
+				return false;
+
+		return true;
+	}
+	
+	public static boolean isInteger(String s) {
+	    try { 
+	        Integer.parseInt(s); 
+	    } catch(NumberFormatException e) { 
+	        return false; 
+	    } catch(NullPointerException e) {
+	        return false;
+	    }
+	    // only got here if we didn't return false
+	    return true;
 	}
 	
 	//Function to read the file to a single string
