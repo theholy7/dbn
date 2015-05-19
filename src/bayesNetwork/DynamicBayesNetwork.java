@@ -1,16 +1,20 @@
 package bayesNetwork;
 
-import java.io.IOException;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.TreeSet;
 
 /**
+ * This class deals with the collection of nodes and edges that build a network
+ * 
+ * It deals with all things related to the construction of the best network possible. 
+ * 
  * @author Jose Miguel Filipe Antunes  ist167929
  * @author Pedro Miguel Nobre ist167693
+ *  
  *
  */
 public class DynamicBayesNetwork {

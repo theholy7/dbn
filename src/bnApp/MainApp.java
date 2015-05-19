@@ -9,6 +9,8 @@ import java.io.File;
 import bayesNetwork.*;
 
 /**
+ * Represents the app that deals with the parsing of the file and creation of DBN
+ * 
  * @author Jose Miguel Filipe Antunes  ist167929
  * @author Pedro Miguel Nobre ist167693
  *
@@ -30,11 +32,11 @@ public class MainApp {
 		}
 			
 		if(!f.exists()){
-			System.out.println("404: file not found");
+			System.out.println("file not found");
 			System.exit(1);
 		}
 		if(!f2.exists()){
-			System.out.println("404: file2 not found");
+			System.out.println("file not found");
 			System.exit(1);
 		}
 		

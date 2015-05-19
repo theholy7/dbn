@@ -1,6 +1,8 @@
 package bayesNetwork;
 
 /**
+ * Creates a node that stores a name, data and type of data
+ * 
  * @author Jose Miguel Filipe Antunes  ist167929
  * @author Pedro Miguel Nobre ist167693
  *

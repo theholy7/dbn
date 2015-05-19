@@ -1,6 +1,8 @@
 package bayesNetwork;
 
 /**
+ * Creates the Edges that connect nodes in a graph
+ * 
  * @author Jose Miguel Filipe Antunes  ist167929
  * @author Pedro Miguel Nobre ist167693
  *
