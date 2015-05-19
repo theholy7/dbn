@@ -22,14 +22,14 @@ public class MainApp {
 		//Check working directory
 		//System.out.println("Working Directory = " + System.getProperty("user.dir"));
 		
-		File f=new File(args[0]);
-		File f2=new File(args[1]);
-		
 		boolean inputTest=inputParam(args);
 		if(inputTest!=true){
 			System.out.println("Invalid input parameters");
 			System.exit(1);
 		}
+		
+		File f=new File(args[0]);
+		File f2=new File(args[1]);
 			
 		if(!f.exists()){
 			System.out.println("file not found");
