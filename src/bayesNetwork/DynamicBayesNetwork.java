@@ -215,7 +215,7 @@ public class DynamicBayesNetwork {
 
 				
 				
-				for(int k = 0; k < node.dataType; k++){ // erhmmmm... what ? lol !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!???
+				for(int k = 0; k < node.dataType; k++){
 					int auxNijk = calculateNijk(node, parentConfig, k);
 	
 					//System.out.println(auxNijk  + " * log( " + auxNijk + " / " + Nij + " )");
@@ -454,7 +454,7 @@ public class DynamicBayesNetwork {
 	 */
 	private boolean visitNode(Node node, LinkedList<Node> unmarked, LinkedList<Node> tempMarked){
 		
-//	    if n has a temporary mark then stop (not a DAG) ISTO NAO É REDUNDANTE TENDO EM CONTA QUE SO RECEBERÁS NÓS NAO MARCADOS?
+//	    if n has a temporary mark then stop (not a DAG)
 		if(tempMarked.contains(node) == true)
 			return false;
 		else{
